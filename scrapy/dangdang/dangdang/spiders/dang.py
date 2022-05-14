@@ -29,3 +29,4 @@ class DangSpider(scrapy.Spider):
             # scrapy.Request 为scrapy的get方法，url 就是请求的地址，callback是需要执行的函数，
             # 注意这里的allowed_domains 必须不是详细地址应该为domain地址这样就不会阻止爬虫了
             yield scrapy.Request(url=url, callback=self.parse)
+            # yield scrapy.FormRequest(url:url,formdata={"kw":"sss"},callback=self.parse)
