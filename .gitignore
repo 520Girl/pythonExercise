@@ -6,3 +6,4 @@ async协程/video2/*
 !m3u8/
 !async协程/files/第1章 扫地小厮.txt
 requests/video/
+*images/
