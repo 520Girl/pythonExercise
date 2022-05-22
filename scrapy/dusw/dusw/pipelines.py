@@ -15,7 +15,7 @@ class DuswPipeline:
 
     def process_item(self, item, spider):
         self.fp.write(str(item))
-        return item
+        return item # 传递给下一个即将执行的管道类
 
     def close_spider(self,spider):
         self.fp.close()
@@ -48,7 +48,7 @@ class mongoDBPipeline:
         mydb = myclient.navigation
         self.mycol = mydb['books']
         
-        # myclient = MongoClient(host="127.0.0.1",port=27017, username="root",password="123456")
+        # myclient = MongoClient(host="127.0.0.1",port=27017, username="root",password="123456"，authSource=“navigation”)
         # mydb = myclient['articledb']
         # self.mycol = mydb['books']
 
