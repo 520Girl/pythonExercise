@@ -19,7 +19,7 @@ DB_PASSWORD = "123456"
 DB_HOST = "127.0.0.1"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'news163 (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
