@@ -27,3 +27,4 @@ class Wangyi163Item(scrapy.Item):
     eyeNum = scrapy.Field()
     cauthor = scrapy.Field()
     address = scrapy.Field()
+    state = scrapy.Field()

@@ -1,5 +1,10 @@
-from ast import Try
-from ntpath import join
+
+import sys
+import os
+fpath = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+ffpath = os.path.abspath(os.path.join(fpath,".."))
+sys.path.append(ffpath) #python vscode启动debug出现文件不存在的问题
+
 import scrapy
 import time
 from selenium import webdriver
@@ -9,6 +14,7 @@ from wangyi163.items import Wangyi163Item # 导入数据结构
 import unicodedata # 去除uncode 的空白字符
 import re # 将字符转中的通过unicodedata转义的空格替换为$nbsp;
 import json # 将字符串转为python字典
+print(555)
 
 
 
@@ -272,7 +278,7 @@ class WangyiSpider(scrapy.Spider):
 
                 #将数据交个管道 存储数据库
 
-                # item = Wangyi163Item()
+                item = Wangyi163Item()
                 item['title'] = title
                 item['commentNum'] = commentNum
             except Exception as err:
