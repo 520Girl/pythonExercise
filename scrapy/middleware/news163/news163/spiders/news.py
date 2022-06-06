@@ -55,7 +55,7 @@ class NewsSpider(scrapy.Spider):
             yield scrapy.Request(url=new_detail_url, callback=self.parse_detail, meta={'item':item})
 
     def parse_detail(self,response):
-        content = response.xpath('//*[@class="post_body"]/p/text()').extract()
+        content = response.xpath('//*[@class="post_body"]/text()').extract()
         content = ''.join(content)
 
         item = response.meta['item']
