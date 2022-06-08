@@ -2,6 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python:baidu",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python": "E:\\Python\\Python38\\python.exe",
+            "args": [
+                "crawl",
+                "baidu"
+            ],
+            "cwd": "${fileDirname}",
+        },
+        {
             "name": "Python: 当前文件",
             "type": "python",
             "request": "launch",
