@@ -40,7 +40,7 @@ class BaiduSpider(scrapy.Spider):
                 #4.有事情脉络无分类 第一条为百度新闻，有资讯，  5. 像微博一样的新闻，无资讯
                 hotTag = list['hotTag'] 
                 # 请求二级页面
-                if title == "湖南强降雨已致10人死亡3人失联":
+                if title == "尹某某投放异物后观察女生有无喝下":
                     yield scrapy.Request(url=list['url'], callback=self.parse_search_new,meta={"hotTag":hotTag,"item":item})
                     return
 
@@ -99,6 +99,7 @@ class BaiduSpider(scrapy.Spider):
 
     #! 3.1 通过链接访问三级页面，详情页面
     def parse_content_three(self, response):
+        print(response.url)
         data_reg = re.compile(r'window.jsonData = (?P<data>.*?)window.firstScreenTime = Date.now();', re.S)
         data = data_reg.search(response.text).group('data')
         print(data)

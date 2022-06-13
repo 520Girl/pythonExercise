@@ -48,9 +48,10 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+SPIDER_MIDDLEWARES = {
 #    'baiduHOT.middlewares.BaiduhotSpiderMiddleware': 543,
-#}
+    'baiduHOT.middlewares.BaiduUserAentMiddleware': 544,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
