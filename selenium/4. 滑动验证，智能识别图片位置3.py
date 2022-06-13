@@ -66,6 +66,9 @@ class LoginDouban():
                 time.sleep(2)
             else:
                 break
+        driver.quit()
+        # driver.close()关闭当前窗口
+        # driver.quit()退出驱动关闭所有窗口
 
     def get_verify_img(self):
      
@@ -142,7 +145,7 @@ class LoginDouban():
         mixintu = contour_img[y:y + h, x:x + w]  # 截取部分区域图片
         return mixintu
 
-    def get_tracks(self,distance, rate=0.5, t=0.2, v=0):
+    def get_tracks(self,distance, rate=0.75, t=0.2, v=0):
         """ 
             将 distance 分割为小段距离，
             ditance 为总距离，
@@ -153,8 +156,8 @@ class LoginDouban():
             return 小段距离集合
         """
         tracks = []
-        # 加速度临界值
-        mid = rate * distance
+        # 加速度临界值, 前4/5 提速，后1/5减速
+        mid = rate * distance 
         # 当前移动的距离
         s = 0
         # 循环 出距离集合
@@ -164,7 +167,7 @@ class LoginDouban():
             if s < mid:
                 a = 20
             else:
-                a = -3
+                a = -5
             # 计算当前t 时间段走过的距离
             s0 = v0 * t + 0.5 * a * t * t
             # 计算当前速度
