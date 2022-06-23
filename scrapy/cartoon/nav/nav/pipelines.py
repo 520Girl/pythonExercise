@@ -23,7 +23,7 @@ class ImgsPipLine(ImagesPipeline):
         print('########',item)
         filePath = item['img_name']
         return filePath
-
+ 
     def item_completed(self, results, item, info):
         return item
 
