@@ -27,6 +27,17 @@ ROBOTSTXT_OBEY = False
 # 图片下载的路径，供images pipelines使用
 IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'static/images/cartoon')
 
+#图像管道避免下载最近下载的文件。要调整此保留延迟 默认为90天
+# 120 days of delay for files expiration
+FILES_EXPIRES = 120
+IMAGES_EXPIRES = 30
+
+#mongodb数据库配置
+DB_PORT = "27017"
+DB_USER = "nav"
+DB_PASSWORD = "123456"
+DB_HOST = "127.0.0.1"
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -71,7 +82,7 @@ IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'static
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'downloadImage.pipelines.BWDImagesPipeline': 300,
+    # 'downloadImage.pipelines.BWDImagesPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -27,5 +27,6 @@ class NavItem(scrapy.Item):
     LChapters = scrapy.Field()
     sourceHref = scrapy.Field()
     cartoonId = scrapy.Field()
+    crawlLength = scrapy.Field()
     
     

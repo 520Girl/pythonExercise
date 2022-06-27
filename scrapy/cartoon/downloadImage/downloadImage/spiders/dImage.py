@@ -1,11 +1,33 @@
+from asyncio.windows_events import NULL
 import scrapy
 from downloadImage.items import  DownloadimageItem
+from scrapy.utils.project import get_project_settings # 导入配置文件
+from pymongo import MongoClient #mongodb数据库连接
 
 
 class DimageSpider(scrapy.Spider):
     name = 'dImage'
     allowed_domains = ['www.jianshu.com']
     start_urls = ['https://www.jianshu.com/']
+
+
+    def __init__(self,*args, **kwargs):
+        #lamb 2. 连接数据库
+        #? 2.1 配置文件读取 数据库配置信息
+        setting = get_project_settings()
+        self.port = setting['DB_PORT']
+        self.user = setting['DB_USER']
+        self.password = setting['DB_PASSWORD']
+        self.host = setting['DB_HOST']
+
+        #? 2.2 连接数据库
+        myclient = MongoClient(f"mongodb://{self.user}:{int(self.password)}@{self.host}:{int(self.port)}/navigation")
+        mydb = myclient.navigation
+        self.mycol = mydb['spiderCartoons']
+        filter_find = {"content":{'$elemMatch':{"id":"1358025","imgUrl":{"$exists":True}}}}
+        value = self.mycol.find(filter_find)
+        print(list(value)[0]['state'])
+        print(list(self.mycol.find(filter_find)))
 
     def parse(self, response):
         dow =[

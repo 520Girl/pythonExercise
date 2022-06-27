@@ -19,7 +19,7 @@ DEFAULT_REQUEST_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.9 Safari/537.36',
 }   
 # USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'
-LOG_LEVEL='ERROR'
+# LOG_LEVEL='ERROR'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'nav (+http://www.yourdomain.com)'
 
@@ -27,6 +27,11 @@ LOG_LEVEL='ERROR'
 ROBOTSTXT_OBEY = False
 IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'static\images\cartoon')
 
+#mongodb数据库配置
+DB_PORT = "27017"
+DB_USER = "nav"
+DB_PASSWORD = "123456"
+DB_HOST = "127.0.0.1"
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -70,9 +75,10 @@ IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'static
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'nav.pipelines.NavPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'nav.pipelines.ImgsPipLine': 300,
+    'nav.pipelines.MongodbPipeline': 301
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

@@ -11,23 +11,41 @@ import os
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from nav.items import NavItem
-
+from scrapy.utils.project import get_project_settings # 导入配置文件
+from pymongo import MongoClient #mongodb数据库连接
 
 class A6cartoonSpider(CrawlSpider):
     name = '6cartoon'
     allowed_domains = ['sixmh7.com']
-    start_urls = ['http://www.sixmh7.com/rank/1-1.html']
+    start_urls = ['http://www.sixmh7.com/rank/1-9.html']
 
     rules = (
-        Rule(LinkExtractor(allow=r'/rank/1-\d+\.html'), callback='parse_item', follow=True),
+        # Rule(LinkExtractor(allow=r'/rank/1-\d+.html'), callback='parse_item', follow=False),
+        Rule(LinkExtractor(allow=r'/rank/1-9.html'), callback='parse_item', follow=False),
     )
+
+    #! 初始化需要使用到数据库以达到增量爬虫的目的
+    def __init__(self,*args, **kwargs):
+        super(A6cartoonSpider, self).__init__(*args, **kwargs)  # 这里是关键
+        #lamb 2. 连接数据库
+        #? 2.1 配置文件读取 数据库配置信息
+        setting = get_project_settings()
+        self.port = setting['DB_PORT']
+        self.user = setting['DB_USER']
+        self.password = setting['DB_PASSWORD']
+        self.host = setting['DB_HOST']
+
+        #? 2.2 连接数据库
+        myclient = MongoClient(f"mongodb://{self.user}:{int(self.password)}@{self.host}:{int(self.port)}/navigation")
+        mydb = myclient.navigation
+        self.mycol = mydb['spiderCartoons']
 
     #! 获取到 页面排行榜数据
     def parse_item(self, response):
         cy_list_mh = response.xpath('//div[@class="cy_list_mh"]/ul')
 
         item = NavItem()
-        for list in cy_list_mh:
+        for list in cy_list_mh[:1]:
             # title
             title = list.xpath('./li[@class="title"]/a/text()').extract_first()
             item['title'] = title
@@ -63,15 +81,21 @@ class A6cartoonSpider(CrawlSpider):
             item['sourceHref'] = source_url
     
 
-            #todo 请求详情页面
-            yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id})
-            print(response.url)
-            break;
-        
+            #todo 请求详情页面,判断是否是爬取过
+            filter_find = {"title":item['title']}
+            crawlState = self.mycol.find_one(filter_find)
+            print(crawlState['state'])
+            if crawlState == None or crawlState['state'] == 0:
+                yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id})
+            else:
+                print("下载过")
+
     #! 获取详情 页面
     def parse_item_source(self, response):
         detail = response.xpath('//div[@class="cy_content2"]/div[2]')
         item = response.meta['item']
+        print(f"----{item['title']}/开始爬取------")
+        
         #简介 判断两次简介长度进行赋值
         desc = detail.xpath('./div[@class="cy_info"]//p[@id="comic-description"]/text()').extract_first()
         if desc.find("：") <= 10 and desc.find("：") != -1: #武炼巅峰漫画： 去除冒号后面的东西，只需要简介
@@ -79,9 +103,9 @@ class A6cartoonSpider(CrawlSpider):
         if len(desc) > len(item['desc']):
             item['desc'] = desc
         #作者
-        author = detail.xpath('./div[@class="cy_info"]/div[1]//div[@class="cy_xinxi"]/span[1]/text()').extract_first().split("作者：")[1]
+        author = detail.xpath('./div[@class="cy_info"]/div[1]/div[3]/span[1]/text()').extract_first().split("作者：")[1]
         if author.find(": ") <= 4 and author.find(": ") != -1:
-            author = author.split("：")[1]
+            author = author.split(": ")[1]
         item['author'] = author
         # 创建时间
         item["createTime"] = time.time()
@@ -106,36 +130,70 @@ class A6cartoonSpider(CrawlSpider):
         timeArray = time.strptime(LChapters_time, "%Y-%m-%d") #转换成时间数组
         dic_time = time.mktime(timeArray) #转换成时间戳
         item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url}
+
+
+        #! 增量爬虫检查是否是最新章节
+        nameState = self.mycol.find_one({'LChapters.name':LChapters_name})
+        time_state = self.mycol.find_one({'LChapters.dic_time':{'$gte':dic_time}})
+        if nameState != None or time_state != None:
+            return
         
         #! 获取 content接口获取数据 POST 请求scrapy post 默认是x-www-form-urlencoded数据格式所以不要转换
         url = f'http://www.sixmh7.com/bookchapter/' 
         yield scrapy.FormRequest(url=url,formdata={"id":str(response.meta['id']),"id2":str(1)},callback=self.parse_bookChapter,meta={"item":item,"id":response.meta['id']})
-    
+
+
     #! 3. 获取到章节数据
     def parse_bookChapter(self, response):
         item = response.meta['item']
+        # 添加 爬取的章节数
+        item['crawlLength'] = 1
         bookChapter = response.body
         bookChapter = json.loads(bookChapter)
+        # 将没个章节的数据先插入content不然先通过yield请求页面再存入content 会导致顺序不对，猪脑子
         for chapter in bookChapter:
-            chapter_url = f'http://www.sixmh7.com/{response.meta["id"]}/{chapter.chapterid}.html'
-            chapter_data = {"id":chapter.chapterid,"name":chapter.chaptername, "sourceHref":chapter_url}
-            yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"item":item,"chapter":chapter_data})
-    
+            chapter_url = f'http://www.sixmh7.com/{response.meta["id"]}/{chapter["chapterid"]}.html'
+            chapter_data = {"id":chapter['chapterid'],"name":chapter['chaptername'], "sourceHref":chapter_url,"imgUrl":[]}
+            item['content'].append(chapter_data)
+
+        # for index,chapter in enumerate(item['content']):
+        for index,chapter in enumerate(item['content'][:5]):
+            yield scrapy.Request(url=chapter['sourceHref'],callback=self.parse_bookChapter_detail,meta={"item_3":item,"index":index})
+        
+        
     #! 4. 访问详情页
     def parse_bookChapter_detail(self, response):
-        img_data = self.parse_bookChapter_detail_img(response.text)
+        try:
+          
+            img_data = self.parse_bookChapter_detail_img(response.text)
 
-        #todo批量下载文件整合content, 存入数据库
-        #? 1. 管道中下载图片
+            #todo批量下载文件整合content, 存入数据库
+            #? 1. 管道中下载图片 通过图片管道下载
+            
+            #? 2. 保存章节图片数据
+            item = response.meta['item_3']
+            index = response.meta['index']
+            print(item['content'][index]['name'])
+            item['crawlLength']+=1
+            item['content'][index]['imgUrl'] = item['content'][index]['imgUrl'] + img_data
 
-        #? 2. 保存content数据
-        item = response.meta['item']
-        chapter = response.meta['chapter']
-        for url in img_data:
-            img_sourceHref = url.rsplit("/")[1]
-            chapter['sourceHref'] = img_sourceHref
-        item['content'].append(chapter)
-        yield item
+            # 避免出现数据还未写入就执行pipelines
+            #! 将数据导出进行 下载图片，存入数据库
+            # state = True
+            # if index == len(item['content'][:5]) -1:
+            #     for list in item['content'][:5]:
+            #         if len(list['imgUrl']) == 0:
+            #             state = False
+            # else:
+            #     state = False
+            # if state == True:
+            #     yield item
+            if item['crawlLength'] == len(item['content'][:5]):
+                yield item
+        except Exception as err:
+            print(index,img_data,item['content'])
+            print(err)
+
 
 
     #!  获取漫画的详细信息 也就是看漫画页面, 发现可以在页面中找到响应的js，需要将js 执行得到图片数据
@@ -143,12 +201,12 @@ class A6cartoonSpider(CrawlSpider):
     def parse_bookChapter_detail_img(self, bookChapter_text):
         #todo 1.找到js代码提取出来
         regex = re.compile(r".*?eval(?P<javaScript>.*?)</script>",re.S)
-        re_js_group = re.search(bookChapter_text)
+        re_js_group = regex.search(bookChapter_text)
         re_js = re_js_group.group('javaScript')
 
         #todo 2. 处理js代码，将执行结果输出，进行数据处理
         #? 将js变为自执行函数,并输出
-        re_js_auto = re_js.replace("('g",")('g").replace("}))","})")
+        re_js_auto = re_js.replace("return p}","return p})").replace("}))","})").strip()
         re_js_auto = f'console.log({re_js_auto})'
         #? 将得到的js 字符串存入问题方便node执行，这里因为，这段js中有单双引号不能直接通过node执行
         #? 需要通过node -e require读取文件的方式执行， node -e "..." 执行字符串js

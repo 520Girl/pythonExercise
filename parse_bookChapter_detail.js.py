@@ -18,7 +18,8 @@ re_list = regex.search(reponse.text)
 
 # 添加括号变成自执行函数
 javaScript = re_list.group('javaScript')
-javaScript = javaScript.replace("('g",")('g").replace("}))","})")
+javaScript = javaScript.replace("('g",")('g").replace("}))","})").strip()
+
 # 添加console.log 输出结果
 javaScript = f'console.log({javaScript})'
 print(javaScript)

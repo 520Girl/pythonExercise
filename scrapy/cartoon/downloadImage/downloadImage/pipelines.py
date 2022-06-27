@@ -25,5 +25,12 @@ class BWDImagesPipeline(ImagesPipeline):
         
     def file_path(self, request, response=None, info=None, *, item=None):
         img_name = request.url.split('/')[-1]
-        
-        return request.meta['item']+img_name
+        return f"name/{request.meta['item']+img_name}"
+    
+    def item_completed(self, results, item, info):
+        print(results)
+        item['files'] = '123'
+        for list in results:
+            print(list[0])
+        print(item)
+        return item
