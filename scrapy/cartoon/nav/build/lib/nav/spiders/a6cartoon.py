@@ -10,7 +10,7 @@ import os
 
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from nav.items import *
+from nav.items import NavItem
 from scrapy.utils.project import get_project_settings # 导入配置文件
 from pymongo import MongoClient #mongodb数据库连接
 from tqdm import tqdm #进度条
@@ -18,11 +18,11 @@ from tqdm import tqdm #进度条
 class A6cartoonSpider(CrawlSpider):
     name = '6cartoon'
     allowed_domains = ['sixmh7.com']
-    start_urls = ['http://www.sixmh7.com/rank/1-1.html']
+    start_urls = ['http://www.sixmh7.com/rank/1-9.html']
 
     rules = (
         # Rule(LinkExtractor(allow=r'/rank/1-\d+.html'), callback='parse_item', follow=False),
-        Rule(LinkExtractor(allow=r'/rank/1-1.html'), callback='parse_item', follow=False),
+        Rule(LinkExtractor(allow=r'/rank/1-9.html'), callback='parse_item', follow=False),
     )
 
     #! 初始化需要使用到数据库以达到增量爬虫的目的
@@ -39,15 +39,13 @@ class A6cartoonSpider(CrawlSpider):
         #? 2.2 连接数据库
         myclient = MongoClient(f"mongodb://{self.user}:{int(self.password)}@{self.host}:{int(self.port)}/navigation")
         mydb = myclient.navigation
-        self.mycolSC = mydb['spiderCartoons'] # 内容
-        self.mycolSCI = mydb['spiderCartoonsItems'] #章节
+        self.mycol = mydb['spiderCartoons']
 
     #! 获取到 页面排行榜数据
     def parse_item(self, response):
         cy_list_mh = response.xpath('//div[@class="cy_list_mh"]/ul')
 
-        item = NavCartoon()
-        # for list in tqdm(cy_list_mh[:1]):
+        item = NavItem()
         for list in tqdm(cy_list_mh[:1]):
             # title
             title = list.xpath('./li[@class="title"]/a/text()').extract_first()
@@ -84,15 +82,14 @@ class A6cartoonSpider(CrawlSpider):
             item['sourceHref'] = source_url
     
 
-            #todo 判断是否爬取完成，判断数据是否存在，当
+            #todo 请求详情页面,判断是否是爬取过
             filter_find = {"title":item['title']}
-            crawlState = self.mycolSC.find_one(filter_find)
-            if crawlState == None: # 表示漫画内容都不存在
+            crawlState = self.mycol.find_one(filter_find)
+            print(crawlState['state'])
+            if crawlState == None or crawlState['state'] == 0:
                 yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id})
-            elif crawlState['state'] == 0: # 表示未爬取完成单 漫画内容是存在的
-                yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id,"crawlState":False})
             else:
-                print(f"{item['title']}内容及其章节数据爬取完成")
+                print("下载过")
 
     #! 获取详情 页面
     def parse_item_source(self, response):
@@ -119,6 +116,7 @@ class A6cartoonSpider(CrawlSpider):
         # 爬取状态
         item['state'] = 0
         # 爬取的内容 ,内容是通过接口获取的值
+        item['content'] = []
         item['weight'] = 1
         item['puTime'] = 0
         item['commentNum'] = 0
@@ -129,103 +127,83 @@ class A6cartoonSpider(CrawlSpider):
         url = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_zhangjie_top"]/p[1]/a/@href').extract_first()
         LChapters_url = f'http://www.sixmh7.com{url}'
         LChapters_time = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_zhangjie_top"]/p[2]/font/text()').extract_first()
-        #将 2022-06-21 转换为时间戳
+            #将 2022-06-21 转换为时间戳
         timeArray = time.strptime(LChapters_time, "%Y-%m-%d") #转换成时间数组
         dic_time = time.mktime(timeArray) #转换成时间戳
         item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url}
-        #获取章节条数以及章节信息
-        crawlLength = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_plist"]/ul/li')
-        item['crawlLength'] = len(crawlLength) #章节长度
-        item['state'] = 0 
-        bookchapter = [] #内容页显示的章节
-        for showChapter in crawlLength:
-            chapterid = showChapter.xpath('./a/@href').extract_first().split("/")[-1].split(".")[0]
-            chaptername = showChapter.xpath('./a/p/text()').extract_first()
-            dist = {"chapterid":chapterid,"chaptername":chaptername}
-            bookchapter.append(dist)
 
 
         #! 增量爬虫检查是否是最新章节
-        # nameState = self.mycol.find_one({'LChapters.name':LChapters_name})
-        # time_state = self.mycol.find_one({'LChapters.dic_time':{'$gte':dic_time}})
-        # if nameState != None or time_state != None:
-        #     return
+        nameState = self.mycol.find_one({'LChapters.name':LChapters_name})
+        time_state = self.mycol.find_one({'LChapters.dic_time':{'$gte':dic_time}})
+        if nameState != None or time_state != None:
+            return
         
         #! 获取 content接口获取数据 POST 请求scrapy post 默认是x-www-form-urlencoded数据格式所以不要转换
         url = f'http://www.sixmh7.com/bookchapter/' 
-        yield scrapy.FormRequest(url=url,formdata={"id":str(response.meta['id']),"id2":str(1)},callback=self.parse_bookChapter,meta={"item":item,"bookchapter":bookchapter,"crawlState":response.meta['crawlState']})
+        yield scrapy.FormRequest(url=url,formdata={"id":str(response.meta['id']),"id2":str(1)},callback=self.parse_bookChapter,meta={"item":item,"id":response.meta['id']})
 
 
     #! 3. 获取到章节数据
     def parse_bookChapter(self, response):
         item = response.meta['item']
-        show_bookchapter = response.meta['bookchapter']
-
-        #1. 需要统计内容表的长度
         # 添加 爬取的章节数
+        item['crawlLength'] = 1
         bookChapter = response.body
         bookChapter = json.loads(bookChapter)
-        item['crawlLength'] = item['crawlLength'] + len(bookChapter)
+        # 将没个章节的数据先插入content不然先通过yield请求页面再存入content 会导致顺序不对，猪脑子
+        for chapter in bookChapter:
+            chapter_url = f'http://www.sixmh7.com/{response.meta["id"]}/{chapter["chapterid"]}.html'
+            chapter_data = {"id":chapter['chapterid'],"name":chapter['chaptername'], "sourceHref":chapter_url,"imgUrl":[]}
+            item['content'].append(chapter_data)
 
-        #! 将内容数据提交出去存入数据库
-        print(f"{item['title']}----------------内容爬取完成准备存入数据库")
-        if 'crawlState' not in response.meta:
-            yield item
-        # 获取章节数据,将显示的章节添加到请求的章节中
-        for show_chapter in show_bookchapter:
-            bookChapter.insert(0,show_chapter)
-
-        for index,chapter in enumerate(bookChapter):
-            time.sleep(1)
-            col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
-            if col_chapter == None or col_chapter['state'] == 0:
-                chapter_url = f'http://www.sixmh7.com/{item["cartoonId"]}/{chapter["chapterid"]}.html'
-                chapter_data = {"chapterId":chapter['chapterid'],"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":index+1}
-                yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"chapterItem":chapter_data,"item":item})
-            else:
-                print(f"{item['title']}------{chapter_data['chapterName']}-----爬取过不再爬取")
         # for index,chapter in enumerate(item['content']):
-        # for index,chapter in enumerate(item['content'][:5]):
-            
+        for index,chapter in enumerate(item['content'][:5]):
+            yield scrapy.Request(url=chapter['sourceHref'],callback=self.parse_bookChapter_detail,meta={"item_3":item,"index":index})
         
         
     #! 4. 访问详情页
     def parse_bookChapter_detail(self, response):
         try:
-            chapterItem = response.meta['chapterItem']
-            item = response.meta['item']
-            # 获取到章节信息
-            img_data = self.parse_bookChapter_detail_img(response.text,f"{item['cartoonId']}{chapterItem['chapterId']}")
+          
+            img_data = self.parse_bookChapter_detail_img(response.text)
 
             #todo批量下载文件整合content, 存入数据库
             #? 1. 管道中下载图片 通过图片管道下载
             
             #? 2. 保存章节图片数据
-            chapterItems = NavCartoonItem()
-            chapterItems['cartoonId'] = item['cartoonId']
-            chapterItems['chapterId'] = chapterItem['chapterId']
-            chapterItems['chapterName'] = chapterItem['chapterName']
-            chapterItems['sourceHref'] = chapterItem['sourceHref']
-            chapterItems['imgUrl'] = img_data
-            chapterItems['state'] = 0
-            chapterItems['chapterOrder'] = chapterItem['chapterOrder']
-            print(f"{item['title']}-------{chapterItems['chapterName']}---------章节爬取完成准备存入数据库")
-            yield chapterItems
-            
+            item = response.meta['item_3']
+            index = response.meta['index']
+            print(item['content'][index]['name'])
+            item['crawlLength']+=1
+            item['content'][index]['imgUrl'] = item['content'][index]['imgUrl'] + img_data
+
+            # 避免出现数据还未写入就执行pipelines
+            #! 将数据导出进行 下载图片，存入数据库
+            # state = True
+            # if index == len(item['content'][:5]) -1:
+            #     for list in item['content'][:5]:
+            #         if len(list['imgUrl']) == 0:
+            #             state = False
+            # else:
+            #     state = False
+            # if state == True:
+            #     yield item
+            if item['crawlLength'] == len(item['content'][:5]):
+                yield item
         except Exception as err:
-            print(item['cartoonId'],chapterItems['chapterId'],chapterItems['chapterName'])
+            print(index,img_data,item['content'])
             print(err)
 
 
 
     #!  获取漫画的详细信息 也就是看漫画页面, 发现可以在页面中找到响应的js，需要将js 执行得到图片数据
     # https://p3.byteimg.com/tos-cn-i-8gu37r9deh/80a4dd2a34e04a71a6ac714cc5c2f97f~noop.jpg
-    def parse_bookChapter_detail_img(self, bookChapter_text,id):
+    def parse_bookChapter_detail_img(self, bookChapter_text):
         #todo 1.找到js代码提取出来
         regex = re.compile(r".*?eval(?P<javaScript>.*?)</script>",re.S)
         re_js_group = regex.search(bookChapter_text)
         re_js = re_js_group.group('javaScript')
-        file_name = f"./index{id}.js"
 
         #todo 2. 处理js代码，将执行结果输出，进行数据处理
         #? 将js变为自执行函数,并输出
@@ -233,11 +211,11 @@ class A6cartoonSpider(CrawlSpider):
         re_js_auto = f'console.log({re_js_auto})'
         #? 将得到的js 字符串存入问题方便node执行，这里因为，这段js中有单双引号不能直接通过node执行
         #? 需要通过node -e require读取文件的方式执行， node -e "..." 执行字符串js
-        with open(file_name, mode="w") as f:
+        with open("./index.js", mode="w") as f:
             f.write(re_js_auto)
 
         #执行node命令将结果输出，将输出结果字符串数组转换为python list
-        cmd = 'node -e "require(\\"%s\\")"' % (file_name) #node -e "require(\"./index.js\")"
+        cmd = 'node -e "require(\\"%s\\")"' % ('./index.js') #node -e "require(\"./index.js\")"
         pipeline = os.popen(cmd)
         result = pipeline.read().strip()
         # result = 'var newImgs=["https://p3.byteimg.com/tos-cn-i-8gu37r9deh/092b7dd1e0bb41c9bb37fc2cd5d1770a~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/6acc9f3e6f6342e58c265007b2dd7717~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/cf6296c57d1d47b9b209e3ec190f7a7f~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/4417f79a614f4bf2993c1ef36ae7f6cc~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/bc6c32f704074086a40c106f9637c8b1~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/d5ec578ec93f4154b4aa388572e6d57d~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/54a904b9232b45bbbb794324d58e3f33~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/f8feea0ea88041a38353b024de4c54f9~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/2c5cc398c71c490f9c86df4a76b9ebdc~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/63a1a67347034915bc9d20643118932d~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/d9014265b0464a569ff0840f868942b1~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/7fefdd62d7744e16b888ac6e1e38dba3~noop.jpg","https://p3.byteimg.com/tos-cn-i-8gu37r9deh/80a4dd2a34e04a71a6ac714cc5c2f97f~noop.jpg"]'
@@ -246,7 +224,5 @@ class A6cartoonSpider(CrawlSpider):
         regex = re.compile(r"var newImgs=(?P<list>.*?)$", re.S)
         data = regex.search(result)
         data = json.loads(data.group('list'))
-        #? 删除文件 
-        os.remove(file_name)
         return data
 

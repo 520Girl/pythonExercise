@@ -6,7 +6,7 @@
 import scrapy
 
 
-class NavCartoon(scrapy.Item):
+class NavItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     createTime = scrapy.Field()
@@ -18,7 +18,7 @@ class NavCartoon(scrapy.Item):
     keywords = scrapy.Field()
     sbelong = scrapy.Field()
     state = scrapy.Field()
-    # content = scrapy.Field()
+    content = scrapy.Field()
     weight = scrapy.Field()
     puTime = scrapy.Field()
     commentNum = scrapy.Field()
@@ -28,15 +28,5 @@ class NavCartoon(scrapy.Item):
     sourceHref = scrapy.Field()
     cartoonId = scrapy.Field()
     crawlLength = scrapy.Field()
-
-
-class NavCartoonItem(scrapy.Item):
-    cartoonId = scrapy.Field()
-    chapterId = scrapy.Field()
-    chapterName = scrapy.Field()
-    imgUrl = scrapy.Field()
-    sourceHref = scrapy.Field()
-    state = scrapy.Field()
-    chapterOrder = scrapy.Field()
     
     

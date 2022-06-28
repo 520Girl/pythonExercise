@@ -1,0 +1,15 @@
+setup.py
+nav/__init__.py
+nav/index.py
+nav/items.py
+nav/middlewares.py
+nav/pipelines.py
+nav/settings.py
+nav/spiders/__init__.py
+nav/spiders/a6cartoon.py
+nav/spiders/baozimh.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
