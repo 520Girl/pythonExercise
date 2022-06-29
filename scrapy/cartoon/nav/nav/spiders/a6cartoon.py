@@ -81,14 +81,14 @@ class A6cartoonSpider(CrawlSpider):
             source_url = f'http://www.sixmh7.com{list.xpath("./li[1]/a/@href").extract_first()}'
             id = list.xpath("./li[1]/a/@href").extract_first().replace("/","")
             item['cartoonId'] = id
-            item['sourceHref'] = source_url
+            item['sourceHref'] = [source_url]
     
 
             #todo 判断是否爬取完成，判断数据是否存在，当
             filter_find = {"title":item['title']}
             crawlState = self.mycolSC.find_one(filter_find)
-            if crawlState == None: # 表示漫画内容都不存在
-                yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id})
+            if crawlState == None: # 表示漫画内容都不存在 crawlState表示需要爬取漫画内容页
+                yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id,"crawlState":True})
             elif crawlState['state'] == 0: # 表示未爬取完成单 漫画内容是存在的
                 yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id,"crawlState":False})
             else:
@@ -115,7 +115,7 @@ class A6cartoonSpider(CrawlSpider):
         item["createTime"] = time.time()
         # 漫画属于分类
         classify = detail.xpath('./div[@class="cy_info"]/div[1]//div[4]/span[1]/text()').extract_first().split("类别：")[1]
-        item['classify'] = classify
+        item['classify'] = self.classify_split(classify)
         # 爬取状态
         item['state'] = 0
         # 爬取的内容 ,内容是通过接口获取的值
@@ -129,10 +129,12 @@ class A6cartoonSpider(CrawlSpider):
         url = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_zhangjie_top"]/p[1]/a/@href').extract_first()
         LChapters_url = f'http://www.sixmh7.com{url}'
         LChapters_time = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_zhangjie_top"]/p[2]/font/text()').extract_first()
+        update_chapterId = url.split("/")[-1].split(".")[0]
         #将 2022-06-21 转换为时间戳
         timeArray = time.strptime(LChapters_time, "%Y-%m-%d") #转换成时间数组
         dic_time = time.mktime(timeArray) #转换成时间戳
-        item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url}
+        
+        item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url,"chapterId":update_chapterId}
         #获取章节条数以及章节信息
         crawlLength = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_plist"]/ul/li')
         item['crawlLength'] = len(crawlLength) #章节长度
@@ -141,7 +143,7 @@ class A6cartoonSpider(CrawlSpider):
         for showChapter in crawlLength:
             chapterid = showChapter.xpath('./a/@href').extract_first().split("/")[-1].split(".")[0]
             chaptername = showChapter.xpath('./a/p/text()').extract_first()
-            dist = {"chapterid":chapterid,"chaptername":chaptername}
+            dist = {"chapterid":chapterid,"chaptername":chaptername.strip().split(" ")[1].split(".")[1]}
             bookchapter.append(dist)
 
 
@@ -169,12 +171,14 @@ class A6cartoonSpider(CrawlSpider):
 
         #! 将内容数据提交出去存入数据库
         print(f"{item['title']}----------------内容爬取完成准备存入数据库")
-        if 'crawlState' not in response.meta:
+        if response.meta['crawlState'] == True :
             yield item
         # 获取章节数据,将显示的章节添加到请求的章节中
+        show_bookchapter.reverse()
         for show_chapter in show_bookchapter:
             bookChapter.insert(0,show_chapter)
 
+        bookChapter.reverse()
         for index,chapter in enumerate(bookChapter):
             time.sleep(1)
             col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
@@ -183,7 +187,7 @@ class A6cartoonSpider(CrawlSpider):
                 chapter_data = {"chapterId":chapter['chapterid'],"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":index+1}
                 yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"chapterItem":chapter_data,"item":item})
             else:
-                print(f"{item['title']}------{chapter_data['chapterName']}-----爬取过不再爬取")
+                print(f"{item['title']}------{chapter['chaptername']}-----爬取过不再爬取")
         # for index,chapter in enumerate(item['content']):
         # for index,chapter in enumerate(item['content'][:5]):
             
@@ -207,7 +211,7 @@ class A6cartoonSpider(CrawlSpider):
             chapterItems['chapterName'] = chapterItem['chapterName']
             chapterItems['sourceHref'] = chapterItem['sourceHref']
             chapterItems['imgUrl'] = img_data
-            chapterItems['state'] = 0
+            chapterItems['state'] = 1
             chapterItems['chapterOrder'] = chapterItem['chapterOrder']
             print(f"{item['title']}-------{chapterItems['chapterName']}---------章节爬取完成准备存入数据库")
             yield chapterItems
@@ -250,3 +254,16 @@ class A6cartoonSpider(CrawlSpider):
         os.remove(file_name)
         return data
 
+
+    def classify_split(self, classify):
+        all_classify=["冒险","热血","武侠格斗","科幻魔幻","侦探推理","耽美爱情","生活漫画","完结漫画","连载漫画"]
+        if len(classify) == 4:
+            if all_classify.find(classify) != -1:
+                return [classify]
+            else:
+                new_classify_1 = classify[:2]
+                new_classify_2 = classify[-2:]
+                if all_classify.find(new_classify_1) != -1 or all_classify.find(new_classify_2) != -1:
+                    return [new_classify_1,new_classify_2]
+        else:
+            return [classify]

@@ -51,9 +51,11 @@ class ImgsPipLine(ImagesPipeline):
                 else:
                     for index,img in enumerate(item['imgUrl']):
                         if img == tuples[1]['url']:
-                            item['imgUrl'][index] = tuples[1]['url'].split('/')[-1]
-                        if re.search(r'^(http://|https://)',item['imgUrl'][index]) == None:
-                            item['state'] = 1 # 修改状态
+                            item['imgUrl'][index] = tuples[1]['path'].split('\\')[-1]
+                            if not(re.search(r'^(http://|https://)',item['imgUrl'][index]) == None):
+                                item['state'] = 0 # 修改状态
+            else:
+                item['state'] = 0 # 修改状态
         return item
 
 class NavPipeline:
@@ -89,3 +91,21 @@ class MongodbPipeline:
         except Exception as err:
             print(err)
         return item  
+    
+    def close_spider(self, spider):
+        #关闭数据库管道时循环状态更新 内容表中的状态
+        all_cartoon = list(spider.mycolSC.find())
+        for cartoon in all_cartoon:
+            if cartoon['state'] == 0:
+                all_chapters = list(spider.mycolSCI.find())
+                chapter_state = True
+                cartoon_id = cartoon['cartoonId']
+                for chapter in all_chapters:
+                    if chapter['state'] == 0:
+                        chapter_state = False
+                        spider.mycolSC.update({"cartoonId":cartoon_id},{'$set':{"state":0}})
+                        break;
+                if chapter_state:
+                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}})
+
+        
