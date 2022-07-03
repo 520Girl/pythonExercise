@@ -121,7 +121,7 @@ class WangyiSpider(scrapy.Spider):
         #     title = response.meta['item']['title']
         
         #lamb 2. createTime创建爬虫的时间
-        createTime = time.time()
+        createTime = time.time() * 1000
 
         #lamb 4. rbelong 新闻本身属于哪个新闻，cbelong新闻爬取的是哪个的新闻, cauthor新闻发布者,time 新闻本身发布时间,address 发文地,最后一项为归类
         time_address = response.xpath('//*[@class="post_info"]/text()').extract_first().split("来源: ")
@@ -204,7 +204,7 @@ class WangyiSpider(scrapy.Spider):
         #     title = response.meta['item']['title']
         
         #lamb 2. createTime创建爬虫的时间
-        createTime = time.time()
+        createTime = time.time() * 1000
 
         #lamb 4. rbelong 新闻本身属于哪个新闻，cbelong新闻爬取的是哪个的新闻, cauthor新闻发布者,time 新闻本身发布时间,
         rbelong_xpath = response.xpath("//textarea[@name='gallery-data']/text()").extract_first()

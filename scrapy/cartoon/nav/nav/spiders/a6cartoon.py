@@ -46,9 +46,10 @@ class A6cartoonSpider(CrawlSpider):
     def parse_item(self, response):
         cy_list_mh = response.xpath('//div[@class="cy_list_mh"]/ul')
 
-        item = NavCartoon()
+        
         # for list in tqdm(cy_list_mh[:1]):
-        for list in tqdm(cy_list_mh[:1]):
+        for list in cy_list_mh:
+            item = NavCartoon()
             # title
             title = list.xpath('./li[@class="title"]/a/text()').extract_first()
             item['title'] = title
@@ -98,7 +99,7 @@ class A6cartoonSpider(CrawlSpider):
     def parse_item_source(self, response):
         detail = response.xpath('//div[@class="cy_content2"]/div[2]')
         item = response.meta['item']
-        print(f"----{item['title']}/开始爬取------")
+        print(f"----{item['title']}开始爬取------")
         
         #简介 判断两次简介长度进行赋值
         desc = detail.xpath('./div[@class="cy_info"]//p[@id="comic-description"]/text()').extract_first()
@@ -112,7 +113,7 @@ class A6cartoonSpider(CrawlSpider):
             author = author.split(": ")[1]
         item['author'] = author
         # 创建时间
-        item["createTime"] = time.time()
+        item["createTime"] = time.time() * 1000
         # 漫画属于分类
         classify = detail.xpath('./div[@class="cy_info"]/div[1]//div[4]/span[1]/text()').extract_first().split("类别：")[1]
         item['classify'] = self.classify_split(classify)
@@ -142,8 +143,12 @@ class A6cartoonSpider(CrawlSpider):
         bookchapter = [] #内容页显示的章节
         for showChapter in crawlLength:
             chapterid = showChapter.xpath('./a/@href').extract_first().split("/")[-1].split(".")[0]
-            chaptername = showChapter.xpath('./a/p/text()').extract_first()
-            dist = {"chapterid":chapterid,"chaptername":chaptername.strip().split(" ")[1].split(".")[1]}
+            chaptername = showChapter.xpath('./a/p/text()').extract_first().strip()
+            if " " in chaptername:
+                chaptername = chaptername.split(" ")[1]
+            elif "." in chaptername:
+                chaptername = chaptername.split(".")[1]
+            dist = {"chapterid":chapterid,"chaptername":chaptername}
             bookchapter.append(dist)
 
 
@@ -180,7 +185,6 @@ class A6cartoonSpider(CrawlSpider):
 
         bookChapter.reverse()
         for index,chapter in enumerate(bookChapter):
-            time.sleep(1)
             col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
             if col_chapter == None or col_chapter['state'] == 0:
                 chapter_url = f'http://www.sixmh7.com/{item["cartoonId"]}/{chapter["chapterid"]}.html'
@@ -258,12 +262,12 @@ class A6cartoonSpider(CrawlSpider):
     def classify_split(self, classify):
         all_classify=["冒险","热血","武侠格斗","科幻魔幻","侦探推理","耽美爱情","生活漫画","完结漫画","连载漫画"]
         if len(classify) == 4:
-            if all_classify.find(classify) != -1:
+            if classify in all_classify:
                 return [classify]
             else:
                 new_classify_1 = classify[:2]
                 new_classify_2 = classify[-2:]
-                if all_classify.find(new_classify_1) != -1 or all_classify.find(new_classify_2) != -1:
+                if new_classify_1 in all_classify or new_classify_2 in all_classify:
                     return [new_classify_1,new_classify_2]
         else:
             return [classify]

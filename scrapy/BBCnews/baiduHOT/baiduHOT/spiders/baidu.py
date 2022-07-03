@@ -148,7 +148,7 @@ class BaiduSpider(scrapy.Spider):
             elif "分钟前" in time_str: #35分钟前
                 minutes = re.match(r'([\d+]*?)分钟前',time_str).group(1)
                 date = datetime.timestamp(now + timedelta(minutes=int(minutes)))
-            return date
+            return date * 1000
         except Exception as err:
             print(err)
             return date

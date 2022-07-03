@@ -109,7 +109,7 @@ class A6cartoonSpider(CrawlSpider):
             author = author.split(": ")[1]
         item['author'] = author
         # 创建时间
-        item["createTime"] = time.time()
+        item["createTime"] = time.time() * 1000
         # 漫画属于分类
         classify = detail.xpath('./div[@class="cy_info"]/div[1]//div[4]/span[1]/text()').extract_first().split("类别：")[1]
         item['classify'] = classify
@@ -129,7 +129,7 @@ class A6cartoonSpider(CrawlSpider):
         LChapters_time = detail.xpath('./div[@class="cy_zhangjie"]/div[@class="cy_zhangjie_top"]/p[2]/font/text()').extract_first()
             #将 2022-06-21 转换为时间戳
         timeArray = time.strptime(LChapters_time, "%Y-%m-%d") #转换成时间数组
-        dic_time = time.mktime(timeArray) #转换成时间戳
+        dic_time = time.mktime(timeArray) * 1000 #转换成时间戳
         item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url}
 
 

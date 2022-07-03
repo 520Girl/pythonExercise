@@ -57,7 +57,7 @@ class ImgsPipLine(ImagesPipeline):
             else:
                 item['state'] = 0 # 修改状态
         return item
-
+ 
 class NavPipeline:
     def process_item(self, item, spider):
         return  
@@ -103,7 +103,7 @@ class MongodbPipeline:
                 for chapter in all_chapters:
                     if chapter['state'] == 0:
                         chapter_state = False
-                        spider.mycolSC.update({"cartoonId":cartoon_id},{'$set':{"state":0}})
+                        spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}})
                         break;
                 if chapter_state:
                     spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}})
