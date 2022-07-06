@@ -1,0 +1,208 @@
+2022-07-03 20:59:39 [scrapy.utils.log] INFO: Scrapy 2.6.1 started (bot: nav)
+2022-07-03 20:59:39 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.4.0, Python 3.8.0b4 (tags/v3.8.0b4:d93605d, Aug 29 2019, 23:21:28) [MSC v.1916 64 bit (AMD64)], pyOpenSSL 22.0.0 (OpenSSL 3.0.3 3 May 2022), cryptography 37.0.2, Platform Windows-10-10.0.22000-SP0
+2022-07-03 20:59:39 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'nav',
+ 'LOG_FILE': 'logs\\nav\\baozimh\\fdd3d195facf11ec90a5f4b3016a38ac.log',
+ 'NEWSPIDER_MODULE': 'nav.spiders',
+ 'SPIDER_MODULES': ['nav.spiders']}
+2022-07-03 20:59:39 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2022-07-03 20:59:39 [scrapy.extensions.telnet] INFO: Telnet Password: f9c598a5749276d7
+2022-07-03 20:59:39 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.logstats.LogStats']
+2022-07-03 20:59:39 [py.warnings] WARNING: e:\python\python38\lib\site-packages\scrapy\utils\project.py:81: ScrapyDeprecationWarning: Use of environment variables prefixed with SCRAPY_ to override settings is deprecated. The following environment variables are currently defined: JOB, LOG_FILE, SLOT, SPIDER
+  warnings.warn(
+
+2022-07-03 20:59:39 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2022-07-03 20:59:39 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2022-07-03 20:59:40 [py.warnings] WARNING: e:\python\python38\lib\site-packages\scrapy\pipelines\media.py:135: ScrapyDeprecationWarning: file_path(self, request, response=None, info=None) is deprecated, please use file_path(self, request, response=None, info=None, *, item=None)
+  self._check_signature(func)
+
+2022-07-03 20:59:40 [scrapy.middleware] INFO: Enabled item pipelines:
+['nav.pipelines.ImgsPipLine', 'nav.pipelines.MongodbPipeline']
+2022-07-03 20:59:40 [scrapy.core.engine] INFO: Spider opened
+2022-07-03 20:59:40 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2022-07-03 20:59:40 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2022-07-03 20:59:41 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.baozimh.com/search?q=%E6%AD%A6%E7%82%BC%E5%B7%85%E5%B3%B0> (referer: None)
+2022-07-03 20:59:42 [scrapy.downloadermiddlewares.redirect] DEBUG: Redirecting (302) to <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b> from <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi>
+2022-07-03 20:59:43 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b> (referer: https://cn.baozimh.com/search?q=%E6%AD%A6%E7%82%BC%E5%B7%85%E5%B3%B0)
+2022-07-03 20:59:44 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2380.html> (referer: https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b)
+2022-07-03 20:59:44 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2379.html> (referer: https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b)
+2022-07-03 20:59:46 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/6.jpg> (referer: None)
+2022-07-03 20:59:46 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/6.jpg> referred in <None>
+2022-07-03 20:59:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/3.jpg> (referer: None)
+2022-07-03 20:59:47 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/3.jpg> referred in <None>
+2022-07-03 20:59:47 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/9.jpg> (referer: None)
+2022-07-03 20:59:47 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/9.jpg> referred in <None>
+2022-07-03 20:59:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/10.jpg> (referer: None)
+2022-07-03 20:59:49 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/10.jpg> referred in <None>
+2022-07-03 20:59:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/9.jpg> (referer: None)
+2022-07-03 20:59:49 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/9.jpg> referred in <None>
+2022-07-03 20:59:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/11.jpg> (referer: None)
+2022-07-03 20:59:50 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/11.jpg> referred in <None>
+2022-07-03 20:59:51 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/12.jpg> (referer: None)
+2022-07-03 20:59:51 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/12.jpg> referred in <None>
+2022-07-03 20:59:54 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/13.jpg> (referer: None)
+2022-07-03 20:59:54 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/13.jpg> referred in <None>
+2022-07-03 21:00:01 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:01 [py.warnings] WARNING: e:\python\python38\lib\site-packages\scrapy\core\engine.py:276: ScrapyDeprecationWarning: Passing a 'spider' argument to ExecutionEngine.download is deprecated
+  return self.download(result, spider) if isinstance(result, Request) else result
+
+2022-07-03 21:00:01 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/4.jpg> (referer: None)
+2022-07-03 21:00:01 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/4.jpg> referred in <None>
+2022-07-03 21:00:01 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/2.jpg> (referer: None)
+2022-07-03 21:00:01 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/2.jpg> referred in <None>
+2022-07-03 21:00:02 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/12.jpg> (referer: None)
+2022-07-03 21:00:02 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/12.jpg> referred in <None>
+2022-07-03 21:00:04 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/13.jpg> (referer: None)
+2022-07-03 21:00:04 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/13.jpg> referred in <None>
+2022-07-03 21:00:04 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/6.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:05 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/14.jpg> (referer: None)
+2022-07-03 21:00:05 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/14.jpg> referred in <None>
+2022-07-03 21:00:05 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg> (failed 1 times): TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:06 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/7.jpg> (failed 1 times): TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:06 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/1.jpg> (failed 1 times): TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:06 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/2.jpg> (failed 1 times): TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:07 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/7.jpg> (referer: None)
+2022-07-03 21:00:07 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/7.jpg> referred in <None>
+2022-07-03 21:00:07 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/14.jpg> (referer: None)
+2022-07-03 21:00:07 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/14.jpg> referred in <None>
+2022-07-03 21:00:07 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/4.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:08 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/8.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:10 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/10.jpg> (referer: None)
+2022-07-03 21:00:10 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/10.jpg> referred in <None>
+2022-07-03 21:00:14 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/8.jpg> (referer: None)
+2022-07-03 21:00:14 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/8.jpg> referred in <None>
+2022-07-03 21:00:16 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/6.jpg> (referer: None)
+2022-07-03 21:00:16 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/6.jpg> referred in <None>
+2022-07-03 21:00:17 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/2.jpg> (referer: None)
+2022-07-03 21:00:17 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/2.jpg> referred in <None>
+2022-07-03 21:00:27 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg> (failed 2 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:28 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/1.jpg> (failed 2 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:29 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg> (failed 2 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:30 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/4.jpg> (failed 2 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:32 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/11.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:36 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/11.jpg> (referer: None)
+2022-07-03 21:00:36 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/11.jpg> referred in <None>
+2022-07-03 21:00:40 [scrapy.extensions.logstats] INFO: Crawled 24 pages (at 24 pages/min), scraped 0 items (at 0 items/min)
+2022-07-03 21:00:40 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/5.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:00:51 [scrapy.downloadermiddlewares.retry] ERROR: Gave up retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/4.jpg> (failed 3 times): TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:51 [scrapy.pipelines.files] WARNING: File (unknown-error): Error downloading image from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/4.jpg> referred in <None>: TCP connection timed out: 10060: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。.
+2022-07-03 21:00:58 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/1.jpg> (referer: None)
+2022-07-03 21:00:58 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/1.jpg> referred in <None>
+2022-07-03 21:01:24 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/3.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:01:40 [scrapy.extensions.logstats] INFO: Crawled 25 pages (at 1 pages/min), scraped 0 items (at 0 items/min)
+2022-07-03 21:01:50 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/5.jpg> (referer: None)
+2022-07-03 21:01:50 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/5.jpg> referred in <None>
+2022-07-03 21:02:06 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/3.jpg> (referer: None)
+2022-07-03 21:02:06 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s2.baozimh.com/scomic/wuliandianfeng-pikapi/0/2379-nam6/3.jpg> referred in <None>
+2022-07-03 21:02:06 [scrapy.core.scraper] DEBUG: Scraped from <200 https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2379.html>
+{'cartoonId': '16041',
+ 'chapterId': '1303354',
+ 'chapterName': '人魔大战篇---血斗场的规矩',
+ 'chapterOrder': 1651,
+ 'imgUrl': ['1.jpg',
+            '2.jpg',
+            '3.jpg',
+            '4.jpg',
+            '5.jpg',
+            '6.jpg',
+            '7.jpg',
+            '8.jpg',
+            '9.jpg',
+            '10.jpg',
+            '11.jpg',
+            '12.jpg',
+            '13.jpg',
+            '14.jpg'],
+ 'sourceHref': ['https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2379.html'],
+ 'state': 1}
+2022-07-03 21:02:24 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/1.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:02:24 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/8.jpg> (failed 1 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:02:31 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/1.jpg> (referer: None)
+2022-07-03 21:02:31 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/1.jpg> referred in <None>
+2022-07-03 21:02:40 [scrapy.extensions.logstats] INFO: Crawled 28 pages (at 3 pages/min), scraped 1 items (at 1 items/min)
+2022-07-03 21:03:27 [scrapy.downloadermiddlewares.retry] ERROR: Gave up retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg> (failed 3 times): User timeout caused connection failure: Getting https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg took longer than 180.0 seconds..
+2022-07-03 21:03:27 [scrapy.pipelines.files] WARNING: File (unknown-error): Error downloading image from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg> referred in <None>: User timeout caused connection failure: Getting https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg took longer than 180.0 seconds..
+2022-07-03 21:03:29 [scrapy.downloadermiddlewares.retry] ERROR: Gave up retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg> (failed 3 times): User timeout caused connection failure: Getting https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg took longer than 180.0 seconds..
+2022-07-03 21:03:29 [scrapy.pipelines.files] WARNING: File (unknown-error): Error downloading image from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg> referred in <None>: User timeout caused connection failure: Getting https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg took longer than 180.0 seconds..
+2022-07-03 21:03:40 [scrapy.extensions.logstats] INFO: Crawled 28 pages (at 0 pages/min), scraped 1 items (at 0 items/min)
+2022-07-03 21:04:40 [scrapy.extensions.logstats] INFO: Crawled 28 pages (at 0 pages/min), scraped 1 items (at 0 items/min)
+2022-07-03 21:05:02 [scrapy.downloadermiddlewares.retry] DEBUG: Retrying <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/8.jpg> (failed 2 times): [<twisted.python.failure.Failure OpenSSL.SSL.Error: [('SSL routines', '', 'unexpected eof while reading')]>]
+2022-07-03 21:05:03 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/8.jpg> (referer: None)
+2022-07-03 21:05:03 [scrapy.pipelines.files] DEBUG: File (downloaded): Downloaded file from <GET https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/8.jpg> referred in <None>
+2022-07-03 21:05:03 [scrapy.core.scraper] DEBUG: Scraped from <200 https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2380.html>
+{'cartoonId': '16041',
+ 'chapterId': '1303355',
+ 'chapterName': '人魔大战篇---还钱',
+ 'chapterOrder': 1652,
+ 'imgUrl': ['1.jpg',
+            '2.jpg',
+            '3.jpg',
+            'https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/4.jpg',
+            'https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/5.jpg',
+            '6.jpg',
+            'https://s1.baozimh.com/scomic/wuliandianfeng-pikapi/0/2380-fxo2/7.jpg',
+            '8.jpg',
+            '9.jpg',
+            '10.jpg',
+            '11.jpg',
+            '12.jpg',
+            '13.jpg',
+            '14.jpg'],
+ 'sourceHref': ['https://cn.webmota.com/comic/chapter/wuliandianfeng-pikapi_b/0_2380.html'],
+ 'state': 0}
+2022-07-03 21:05:03 [scrapy.core.engine] INFO: Closing spider (finished)
+2022-07-03 21:05:07 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'downloader/exception_count': 21,
+ 'downloader/exception_type_count/twisted.internet.error.TCPTimedOutError': 5,
+ 'downloader/exception_type_count/twisted.internet.error.TimeoutError': 2,
+ 'downloader/exception_type_count/twisted.web._newclient.ResponseNeverReceived': 14,
+ 'downloader/request_bytes': 17298,
+ 'downloader/request_count': 51,
+ 'downloader/request_method_count/GET': 51,
+ 'downloader/response_bytes': 11280044,
+ 'downloader/response_count': 30,
+ 'downloader/response_status_count/200': 29,
+ 'downloader/response_status_count/302': 1,
+ 'elapsed_time_seconds': 326.883334,
+ 'file_count': 25,
+ 'file_status_count/downloaded': 25,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2022, 7, 3, 13, 5, 7, 189956),
+ 'httpcompression/response_bytes': 1235380,
+ 'httpcompression/response_count': 4,
+ 'item_scraped_count': 2,
+ 'log_count/DEBUG': 76,
+ 'log_count/ERROR': 3,
+ 'log_count/INFO': 15,
+ 'log_count/WARNING': 6,
+ 'request_depth_max': 2,
+ 'response_received_count': 29,
+ 'retry/count': 18,
+ 'retry/max_reached': 3,
+ 'retry/reason_count/twisted.internet.error.TCPTimedOutError': 4,
+ 'retry/reason_count/twisted.web._newclient.ResponseNeverReceived': 14,
+ 'scheduler/dequeued': 5,
+ 'scheduler/dequeued/memory': 5,
+ 'scheduler/enqueued': 5,
+ 'scheduler/enqueued/memory': 5,
+ 'start_time': datetime.datetime(2022, 7, 3, 12, 59, 40, 306622)}
+2022-07-03 21:05:07 [scrapy.core.engine] INFO: Spider closed (finished)

@@ -38,5 +38,6 @@ class NavCartoonItem(scrapy.Item):
     sourceHref = scrapy.Field()
     state = scrapy.Field()
     chapterOrder = scrapy.Field()
+    LChapters = scrapy.Field()
     
     

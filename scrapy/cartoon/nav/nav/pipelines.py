@@ -10,7 +10,9 @@ from scrapy.pipelines.images import ImagesPipeline
 import  scrapy
 import os
 import re
+
 from  nav.settings import IMAGES_STORE as IMGS
+
 
 class ImgsPipLine(ImagesPipeline):
     # get_media_requests在请求发出前调用，
@@ -57,7 +59,7 @@ class ImgsPipLine(ImagesPipeline):
             else:
                 item['state'] = 0 # 修改状态
         return item
- 
+
 class NavPipeline:
     def process_item(self, item, spider):
         return  
@@ -85,27 +87,34 @@ class MongodbPipeline:
     def process_item(self, item, spider):
         try:
             if 'chapterId' in item: #表示为章节数据
-                spider.mycolSCI.insert_one(dict(item))
+                if 'LChapters' in item: #更新最新章节
+                    spider.mycolSC.update_one({"cartoonId":item['cartoonId']},{'$set':{"LChapters":item['LChapters']}})
+                    item.pop('LChapters')
+                    spider.mycolSCI.insert_one(dict(item))
+                else:
+                    spider.mycolSCI.insert_one(dict(item))
             else: # 表示为内容数据
                 spider.mycolSC.insert_one(dict(item))
         except Exception as err:
             print(err)
         return item  
+        pass
     
     def close_spider(self, spider):
         #关闭数据库管道时循环状态更新 内容表中的状态
         all_cartoon = list(spider.mycolSC.find())
         for cartoon in all_cartoon:
             if cartoon['state'] == 0:
-                all_chapters = list(spider.mycolSCI.find())
-                chapter_state = True
                 cartoon_id = cartoon['cartoonId']
+                all_chapters = list(spider.mycolSCI.find({"cartoonId":cartoon_id}).sort("chapterOrder",-1))
+                chapter_state = True
                 for chapter in all_chapters:
                     if chapter['state'] == 0:
                         chapter_state = False
                         spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}})
                         break;
+                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"crawlLength":len(all_chapters)}})
                 if chapter_state:
                     spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}})
 
-        
+

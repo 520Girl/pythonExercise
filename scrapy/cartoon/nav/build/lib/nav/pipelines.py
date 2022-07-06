@@ -16,11 +16,11 @@ class ImgsPipLine(ImagesPipeline):
     # get_media_requests在请求发出前调用，
     def get_media_requests(self, item, info):
         # 下载略缩图，并创建文件夹
-        yield scrapy.Request(url=item['thum'],meta={"cartoonId":item['cartoonId']}) 
-        # 下载章节漫画
-        for img_list in item['content']:
-            for url in img_list['imgUrl']:
-                yield scrapy.Request(url=url,meta={"cartoonId":item['cartoonId'],"chapterid":img_list['id']})
+        if 'chapterId' in item: 
+            for url in item['imgUrl']:
+                yield scrapy.Request(url=url,meta={"cartoonId":item['cartoonId'],"chapterId":item['chapterId']})
+        else:# 下载章节漫画
+            yield scrapy.Request(url=item['thum'],meta={"cartoonId":item['cartoonId']}) 
 
     
     #file_path在请求完成将要把图片存储在本地时调用
@@ -33,10 +33,10 @@ class ImgsPipLine(ImagesPipeline):
 
         #如果在表示为章节漫画， 不在表示为略缩图
         current_path = os.path.dirname(os.path.dirname(__file__))
-        if "chapterid" in meta: 
+        if "chapterId" in meta: 
             # os.makedirs(os.path.join(current_path, rf"{meta['cartoonId']}\{meta['chapterid']}"), exist_ok=True)
             # return os.path.join(current_path,rf"{meta['cartoonId']}/{meta['chapterid']}/{img_name}")
-            return rf"{meta['cartoonId']}\{meta['chapterid']}\{img_name}"
+            return rf"{meta['cartoonId']}\{meta['chapterId']}\{img_name}"
         else:
             # os.makedirs(os.path.join(current_path, rf"{meta['cartoonId']}"), exist_ok=True)
             # return os.path.join(current_path,rf"{meta['cartoonId']}/{img_name}")
@@ -44,26 +44,20 @@ class ImgsPipLine(ImagesPipeline):
     # 当图片下载完成之后判断是否下载成功改变item
     def item_completed(self, results, item, info):
         for tuples in results:
-            if tuples[0] == False: #表示图片下载失败
-                if item['thum'] == tuples[1]['url']: #表示是略缩图1
-                    item['thum'] = False
+            if tuples[0] != False: #表示图片下载失败
+                if  'chapterId' not in item: #表示是略缩图
+                    if item['thum'] == tuples[1]['url']:
+                        item['thum'] = tuples[1]['path'].split("\\")[-1]
                 else:
-                    for img_List in item['content']:
-                        for index,img in enumerate(img_List['imgUrl']): # 数组循环 是index并不是值
-                            if img == tuples[1]['url']:
-                                img_List['imgUrl'][index] = False
+                    for index,img in enumerate(item['imgUrl']):
+                        if img == tuples[1]['url']:
+                            item['imgUrl'][index] = tuples[1]['path'].split('\\')[-1]
+                            if not(re.search(r'^(http://|https://)',item['imgUrl'][index]) == None):
+                                item['state'] = 0 # 修改状态
             else:
-                if item['thum'] == tuples[1]['url']: #表示是略缩图
-                    item['thum'] = tuples[1]['path'].split("\\")[-1]
-                else:
-                    for img_List in item['content']:
-                        for index,img in enumerate(img_List['imgUrl']): # 数组循环 是index并不是值
-                            if img == tuples[1]['url']:
-                                img_List['imgUrl'][index] = tuples[1]['url'].split('/')[-1]
-        print(f'----{item["title"]}爬取完成------')
-        item['state'] = 1
+                item['state'] = 0 # 修改状态
         return item
-
+ 
 class NavPipeline:
     def process_item(self, item, spider):
         return  
@@ -90,9 +84,28 @@ class MongodbPipeline:
     #lamb 2. 将数据写入数据库
     def process_item(self, item, spider):
         try:
-            print(f"------------------{item['title']}--------------开始写入数据库")
-            mydict = item
-            x = spider.mycol.insert_one(dict(mydict))
+            if 'chapterId' in item: #表示为章节数据
+                spider.mycolSCI.insert_one(dict(item))
+            else: # 表示为内容数据
+                spider.mycolSC.insert_one(dict(item))
         except Exception as err:
             print(err)
         return item  
+    
+    def close_spider(self, spider):
+        #关闭数据库管道时循环状态更新 内容表中的状态
+        all_cartoon = list(spider.mycolSC.find())
+        for cartoon in all_cartoon:
+            if cartoon['state'] == 0:
+                all_chapters = list(spider.mycolSCI.find())
+                chapter_state = True
+                cartoon_id = cartoon['cartoonId']
+                for chapter in all_chapters:
+                    if chapter['state'] == 0:
+                        chapter_state = False
+                        spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}})
+                        break;
+                if chapter_state:
+                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}})
+
+        

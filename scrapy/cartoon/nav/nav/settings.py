@@ -6,12 +6,15 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
 import os
 BOT_NAME = 'nav'
 
 SPIDER_MODULES = ['nav.spiders']
 NEWSPIDER_MODULE = 'nav.spiders'
+
+#让蜘蛛在访问网址中间休息1~2秒。
+DOWNLOAD_DELAY = 2
+RANDOMIZE_DOWNLOAD_DELAY = True
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -69,9 +72,13 @@ DB_HOST = "127.0.0.1"
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+    # 'scrapy.extensions.telnet.TelnetConsole': None,
+    'scrapy.extensions.corestats.CoreStats': None,  # 禁用默认的数据收集器
+    'nav.CoreStats.SpiderOpenCloseLogging': 501,
+}
+
+
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html

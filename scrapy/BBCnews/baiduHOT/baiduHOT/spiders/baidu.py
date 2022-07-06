@@ -131,13 +131,13 @@ class BaiduSpider(scrapy.Spider):
         # 判断是否存在一二三等 re.match(r'前([\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u5341]*?)天','前一天').group(1) 一。 \d+ 匹配数组
         try:
             if time_str in "前天"  :
-                if len(time_str).len >= 2 :
+                if len(time_str) == 2 :
                     date = datetime.timestamp(now + timedelta(days=-2))
                 else: #昨天22:12
                     hours_minutes = time_str.split("前天")[1].split(":")
                     date = datetime.timestamp(now + timedelta(days=-2,hours=int(hours_minutes[0]),minutes=int(hours_minutes[1])))
             elif time_str in "昨天":
-                if len(time_str).len >= 2 :
+                if len(time_str) == 2 :
                     date = datetime.timestamp(now + timedelta(days=-1))
                 else: #昨天22:12
                     hours_minutes = time_str.split("昨天")[1].split(":")

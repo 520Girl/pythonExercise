@@ -1,4 +1,6 @@
 
+#! 该爬虫负责 爬取整站数据
+
 # 爬取的网址是 http://www.sixmh7.com/ 6漫画，先爬取几个常看的漫画的全部章节
 #1. 使用增量爬虫的crawlSpider的爬虫
 #2. 先爬取漫画的详细信息， 通过信息爬取漫画的章节信息， 通过章节信息爬取的内容
@@ -14,6 +16,7 @@ from nav.items import *
 from scrapy.utils.project import get_project_settings # 导入配置文件
 from pymongo import MongoClient #mongodb数据库连接
 from tqdm import tqdm #进度条
+import random
 
 class A6cartoonSpider(CrawlSpider):
     name = '6cartoon'
@@ -90,10 +93,9 @@ class A6cartoonSpider(CrawlSpider):
             crawlState = self.mycolSC.find_one(filter_find)
             if crawlState == None: # 表示漫画内容都不存在 crawlState表示需要爬取漫画内容页
                 yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id,"crawlState":True})
-            elif crawlState['state'] == 0: # 表示未爬取完成单 漫画内容是存在的
+            else: # 表示未爬取完成单 漫画内容是存在的
                 yield scrapy.Request(url = source_url, callback=self.parse_item_source, meta = {"item":item,"id":id,"crawlState":False})
-            else:
-                print(f"{item['title']}内容及其章节数据爬取完成")
+
 
     #! 获取详情 页面
     def parse_item_source(self, response):
@@ -153,14 +155,32 @@ class A6cartoonSpider(CrawlSpider):
 
 
         #! 增量爬虫检查是否是最新章节
-        # nameState = self.mycol.find_one({'LChapters.name':LChapters_name})
-        # time_state = self.mycol.find_one({'LChapters.dic_time':{'$gte':dic_time}})
-        # if nameState != None or time_state != None:
-        #     return
+        # 先和显示的章节和数据库的最后以章节做对比找出
+        state = False
+        index = 4
+        while state == False:
+            value = self.find_new_chapter(item['cartoonId'], bookchapter,index)
+            new_bookchapter = value[0]
+            db_vague_str = value[1]
+            if len(new_bookchapter) >= 1: # 二次查询确认是否是不存在的
+                chapterName = new_bookchapter[-1]['chaptername']
+                if self.mycolSCI.find_one({"chapterName":{"$regex":chapterName}}) == None:
+                    state = True
+                else:
+                    index+=1
         
-        #! 获取 content接口获取数据 POST 请求scrapy post 默认是x-www-form-urlencoded数据格式所以不要转换
-        url = f'http://www.sixmh7.com/bookchapter/' 
-        yield scrapy.FormRequest(url=url,formdata={"id":str(response.meta['id']),"id2":str(1)},callback=self.parse_bookChapter,meta={"item":item,"bookchapter":bookchapter,"crawlState":response.meta['crawlState']})
+        if len(new_bookchapter) >= 1:
+            new_bookchapter.reverse()
+            for index,chapter in enumerate(new_bookchapter):
+                col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
+                if col_chapter == None or col_chapter['state'] == 0:
+                    chapter_url = f'http://www.sixmh7.com/{item["cartoonId"]}/{chapter["chapterid"]}.html'
+                    chapter_data = {"chapterId":str(int(db_vague_str['chapterId'])+ index + random.randint(0,4)),"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":int(db_vague_str['chapterOrder'])+index+1}
+                    yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"chapterItem":chapter_data,"item":item})
+        else:
+            #! 获取 content接口获取数据 POST 请求scrapy post 默认是x-www-form-urlencoded数据格式所以不要转换
+            url = f'http://www.sixmh7.com/bookchapter/' 
+            yield scrapy.FormRequest(url=url,formdata={"id":str(response.meta['id']),"id2":str(1)},callback=self.parse_bookChapter,meta={"item":item,"bookchapter":bookchapter,"crawlState":response.meta['crawlState']})
 
 
     #! 3. 获取到章节数据
@@ -182,13 +202,38 @@ class A6cartoonSpider(CrawlSpider):
         show_bookchapter.reverse()
         for show_chapter in show_bookchapter:
             bookChapter.insert(0,show_chapter)
+        # 将章节数据 和content 数据合并查找在数据库中是否存在，不存在就执行一直执行下去
+
+        state = False
+        index = 4
+        while state == False:
+            value = self.find_new_chapter(item['cartoonId'], bookchapter,index)
+            new_bookchapter = value[0]
+            db_vague_str = value[1]
+            if len(new_bookchapter) >= 1: # 二次查询确认是否是不存在的
+                chapterName = new_bookchapter[-1]['chaptername']
+                if self.mycolSCI.find_one({"chapterName":{"$regex":chapterName}}) == None:
+                    state = True
+                else:
+                    index+=1
+            else:
+                state = True
+        if len(new_bookchapter) >= 1:
+            new_bookchapter.reverse()
+            for index,chapter in enumerate(new_bookchapter):
+                col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
+                if col_chapter == None or col_chapter['state'] == 0:
+                    chapter_url = f'http://www.sixmh7.com/{item["cartoonId"]}/{chapter["chapterid"]}.html'
+                    chapter_data = {"chapterId":str(int(db_vague_str['chapterId'])+ index + random.randint(0,4)),"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":int(db_vague_str['chapterOrder'])+index+1}
+                    yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"chapterItem":chapter_data,"item":item})
+            return
 
         bookChapter.reverse()
         for index,chapter in enumerate(bookChapter):
             col_chapter = self.mycolSCI.find_one({"chapterId":chapter['chapterid']})
             if col_chapter == None or col_chapter['state'] == 0:
                 chapter_url = f'http://www.sixmh7.com/{item["cartoonId"]}/{chapter["chapterid"]}.html'
-                chapter_data = {"chapterId":chapter['chapterid'],"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":index+1}
+                chapter_data = {"chapterId":str(int(db_vague_str['chapterId'])+ index + random.randint(0,4)),"chapterName":chapter['chaptername'], "sourceHref":[chapter_url],"imgUrl":[],"chapterOrder":int(db_vague_str['chapterOrder'])+index+1}
                 yield scrapy.Request(url=chapter_url,callback=self.parse_bookChapter_detail,meta={"chapterItem":chapter_data,"item":item})
             else:
                 print(f"{item['title']}------{chapter['chaptername']}-----爬取过不再爬取")
@@ -217,6 +262,7 @@ class A6cartoonSpider(CrawlSpider):
             chapterItems['imgUrl'] = img_data
             chapterItems['state'] = 1
             chapterItems['chapterOrder'] = chapterItem['chapterOrder']
+            chapterItems['LChapters'] = item['LChapters']
             print(f"{item['title']}-------{chapterItems['chapterName']}---------章节爬取完成准备存入数据库")
             yield chapterItems
             
@@ -271,3 +317,19 @@ class A6cartoonSpider(CrawlSpider):
                     return [new_classify_1,new_classify_2]
         else:
             return [classify]
+
+
+    def find_new_chapter(self,cartoonId,head_four_chapter,index):
+            up_new_data = list(self.mycolSCI.find({"cartoonId":str(cartoonId)}).sort("chapterOrder",-1).limit(1))[0]
+            # 截取倒数第八位对比数据库数据
+            if len(up_new_data['chapterName']) >= index :
+                vague_str = up_new_data['chapterName'][-index:]
+            else:
+                vague_str = up_new_data['chapterName']
+            new_bookchapter = []
+            for div in head_four_chapter:
+                if re.match(rf"(.*{vague_str})$",div['chaptername']) == None: # 表示章节不存在
+                    new_bookchapter.append(div)
+                else:
+                    break;
+            return (new_bookchapter,up_new_data)
