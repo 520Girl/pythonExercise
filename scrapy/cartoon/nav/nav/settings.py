@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+from datetime import datetime
 import os
 BOT_NAME = 'nav'
 
@@ -15,6 +16,13 @@ NEWSPIDER_MODULE = 'nav.spiders'
 #让蜘蛛在访问网址中间休息1~2秒。
 DOWNLOAD_DELAY = 2
 RANDOMIZE_DOWNLOAD_DELAY = True
+
+# 设置日志
+# today = datetime.now()
+# log_file_path = "logs/scrapy_{}_{}_{}.log".format(today.year, today.month, today.day)
+# # # 日志级别 CRITICAL, ERROR, WARNING, INFO, DEBUG
+# # LOG_LEVEL='DEBUG'
+# LOG_FILE = log_file_path
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -28,7 +36,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'static\images\cartoon')
+# 这样子写linux 无法识别路径 需要使用os.sep自动识别window linux路径
+# IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), r'\static\images\cartoon')
+IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__))+os.sep+'static'+os.sep+'images'+os.sep+'cartoon')
 
 #mongodb数据库配置
 DB_PORT = "27017"

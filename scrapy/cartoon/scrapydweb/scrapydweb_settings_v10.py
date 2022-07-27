@@ -20,10 +20,10 @@ SCRAPYDWEB_BIND = '0.0.0.0'
 SCRAPYDWEB_PORT = 5000
 
 # The default is False, set it to True to enable basic auth for the web UI.
-ENABLE_AUTH = True
+ENABLE_AUTH = False
 # In order to enable basic auth, both USERNAME and PASSWORD should be non-empty strings.
-USERNAME = 'username'
-PASSWORD = 'password'
+USERNAME = ''
+PASSWORD = ''
 
 
 # Make sure that [Scrapyd](https://github.com/scrapy/scrapyd) has been installed
@@ -48,7 +48,7 @@ PASSWORD = 'password'
 SCRAPYD_SERVERS = [
     '127.0.0.1:6800',
     # 'username:password@localhost:6801#group',
-    ('username', 'password', 'localhost', '6800', 'group'),
+    ('username', 'password', 'localhost', '6801', 'group'),
 ]
 
 
@@ -68,13 +68,13 @@ LOCAL_SCRAPYD_SERVER = ''
 # python -c "from os.path import abspath, isdir; from scrapyd.config import Config; path = abspath(Config().get('logs_dir')); print(path); print(isdir(path))"
 # Check out https://scrapyd.readthedocs.io/en/stable/config.html#logs-dir for more info.
 # e.g. 'C:/Users/username/logs' or '/home/username/logs'
-LOCAL_SCRAPYD_LOGS_DIR = ''
+LOCAL_SCRAPYD_LOGS_DIR = '' #指定scrapyd的logs文件路径
 
 # The default is False, set it to True to automatically run LogParser as a subprocess at startup.
 # Note that you can run the LogParser service separately via command 'logparser' as you like.
 # Run 'logparser -h' to find out the config file of LogParser for more advanced settings.
 # Visit https://github.com/my8100/logparser for more info.
-ENABLE_LOGPARSER = False
+ENABLE_LOGPARSER = False # 不自动启用logparser
 ############################## QUICK SETUP end ################################
 ############################## 快速设置 结束 ###################################
 

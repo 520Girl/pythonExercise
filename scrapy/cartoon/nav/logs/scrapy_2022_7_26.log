@@ -1,0 +1,46 @@
+2022-07-26 12:13:43 [scrapy.utils.log] INFO: Scrapy 2.6.1 started (bot: nav)
+2022-07-26 12:13:43 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.4.0, Python 3.8.0b4 (tags/v3.8.0b4:d93605d, Aug 29 2019, 23:21:28) [MSC v.1916 64 bit (AMD64)], pyOpenSSL 22.0.0 (OpenSSL 3.0.3 3 May 2022), cryptography 37.0.2, Platform Windows-10-10.0.22000-SP0
+2022-07-26 12:13:43 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'nav',
+ 'DOWNLOAD_DELAY': 2,
+ 'LOG_FILE': 'logs/scrapy_2022_7_26.log',
+ 'NEWSPIDER_MODULE': 'nav.spiders',
+ 'SPIDER_MODULES': ['nav.spiders']}
+2022-07-26 12:13:44 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2022-07-26 12:13:44 [scrapy.extensions.telnet] INFO: Telnet Password: 4ce2ec5c2b2b82d2
+2022-07-26 12:13:45 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.logstats.LogStats']
+2022-07-26 12:13:46 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2022-07-26 12:13:46 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2022-07-26 12:13:46 [py.warnings] WARNING: E:\Python\Python38\lib\site-packages\scrapy\pipelines\media.py:135: ScrapyDeprecationWarning: file_path(self, request, response=None, info=None) is deprecated, please use file_path(self, request, response=None, info=None, *, item=None)
+  self._check_signature(func)
+
+2022-07-26 12:13:46 [scrapy.middleware] INFO: Enabled item pipelines:
+['nav.pipelines.ImgsPipLine', 'nav.pipelines.MongodbPipeline']
+2022-07-26 12:13:46 [scrapy.core.engine] INFO: Spider opened
+2022-07-26 12:13:47 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2022-07-26 12:13:47 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2022-07-26 12:13:49 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.baozimh.com/search?q=%E6%AD%A6%E7%82%BC%E5%B7%85%E5%B3%B0> (referer: None)
+2022-07-26 12:13:50 [scrapy.downloadermiddlewares.redirect] DEBUG: Redirecting (302) to <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b> from <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi>
+2022-07-26 12:13:54 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://cn.baozimh.com/comic/wuliandianfeng-pikapi_b> (referer: https://cn.baozimh.com/search?q=%E6%AD%A6%E7%82%BC%E5%B7%85%E5%B3%B0)
+2022-07-26 15:42:32 [scrapy.utils.log] INFO: Scrapy 2.6.1 started (bot: nav)
+2022-07-26 15:42:32 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.4.0, Python 3.8.0b4 (tags/v3.8.0b4:d93605d, Aug 29 2019, 23:21:28) [MSC v.1916 64 bit (AMD64)], pyOpenSSL 22.0.0 (OpenSSL 3.0.3 3 May 2022), cryptography 37.0.2, Platform Windows-10-10.0.22000-SP0
+2022-07-26 15:49:05 [scrapy.utils.log] INFO: Scrapy 2.6.1 started (bot: nav)
+2022-07-26 15:49:05 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.4.0, Python 3.8.0b4 (tags/v3.8.0b4:d93605d, Aug 29 2019, 23:21:28) [MSC v.1916 64 bit (AMD64)], pyOpenSSL 22.0.0 (OpenSSL 3.0.3 3 May 2022), cryptography 37.0.2, Platform Windows-10-10.0.22000-SP0

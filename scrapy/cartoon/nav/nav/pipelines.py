@@ -38,11 +38,11 @@ class ImgsPipLine(ImagesPipeline):
         if "chapterId" in meta: 
             # os.makedirs(os.path.join(current_path, rf"{meta['cartoonId']}\{meta['chapterid']}"), exist_ok=True)
             # return os.path.join(current_path,rf"{meta['cartoonId']}/{meta['chapterid']}/{img_name}")
-            return rf"{meta['cartoonId']}\{meta['chapterId']}\{img_name}"
+            return rf"{meta['cartoonId']}{os.sep}{meta['chapterId']}{os.sep}{img_name}"
         else:
             # os.makedirs(os.path.join(current_path, rf"{meta['cartoonId']}"), exist_ok=True)
             # return os.path.join(current_path,rf"{meta['cartoonId']}/{img_name}")
-            return rf"{meta['cartoonId']}\{img_name}"
+            return rf"{meta['cartoonId']}{os.sep}{img_name}"
     # 当图片下载完成之后判断是否下载成功改变item
     def item_completed(self, results, item, info):
         for tuples in results:
@@ -53,7 +53,10 @@ class ImgsPipLine(ImagesPipeline):
                 else:
                     for index,img in enumerate(item['imgUrl']):
                         if img == tuples[1]['url']:
-                            item['imgUrl'][index] = tuples[1]['path'].split('\\')[-1]
+                            if "/" in tuples[1]['path']: #linux 系统下
+                                item['imgUrl'][index] = tuples[1]['path'].split('/')[-1]
+                            else:
+                                item['imgUrl'][index] = tuples[1]['path'].split('\\')[-1]
                             if not(re.search(r'^(http://|https://)',item['imgUrl'][index]) == None):
                                 item['state'] = 0 # 修改状态
             else:

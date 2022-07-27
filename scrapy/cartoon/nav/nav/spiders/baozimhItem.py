@@ -1,6 +1,4 @@
 #! 该爬虫只负责更新数据
-from tkinter.messagebox import NO
-from urllib.request import Request
 import scrapy
 from scrapy.utils.project import get_project_settings # 导入配置文件
 from pymongo import MongoClient #mongodb数据库连接
@@ -15,7 +13,10 @@ class BaozimhSpider(scrapy.Spider):
     # input_cartoon_name = input("请输入你需要爬取的漫画：")
     input_cartoon_name = "武炼巅峰"
     start_urls = [f'https://cn.baozimh.com/search?q={input_cartoon_name}']
-
+    
+    # 修改初始url 重写start_requests
+    # def start_requests(self):
+    #     return [scrapy.Request(url=f"https://cn.baozimh.com/search?q={self.input_cartoon_name}")]
 
     #! 初始化需要使用到数据库以达到增量爬虫的目的
     def __init__(self,*args, **kwargs):
@@ -82,12 +83,19 @@ class BaozimhSpider(scrapy.Spider):
         LChapters_time = self.time_timeStemp(LChapters_time)
 
         #先查询数据库最新章节数据和 当前爬取的章节做对比得到需要爬取的章节之后进行爬取
-        head_four_chapter = response.xpath('//div[@class="comics-detail"]/div[3]//div[@class="pure-g"]/div')
+        # 这个是点击查看全部章节的漫画，需要组合上面已经显示的章节
+        head_four_chapter = response.xpath('//div[@class="comics-detail"]/div[@class="l-content"]/div/div[@id="chapters_other_list"]/div')
+        show_four_chapter = response.xpath('//div[@class="comics-detail"]/div[@class="l-content"]/div/div[@id="chapter-items"]/div')
+        head_four_chapter = show_four_chapter + head_four_chapter # 进行数组合并
+        head_four_chapter.reverse() # 倒叙循环减少循环的次数
+
         state = False
         index = 4
         while state == False:
-            head_four = self.find_new_chapter(response.meta['cartoonId'],head_four_chapter,index)[0]
-            db_vague_str = self.find_new_chapter(response.meta['cartoonId'],head_four_chapter,index)[1]
+            find_new_chapter_value =self.find_new_chapter(response.meta['cartoonId'],head_four_chapter,index)
+            head_four = find_new_chapter_value[0]
+            db_vague_str = find_new_chapter_value[1]
+            state = find_new_chapter_value[2]
             if len(head_four) >= 1: # 二次查询确认是否是不存在的
                 chapterName = head_four[-1]['chapterName']
                 if self.mycolSCI.find_one({"chapterName":{"$regex":chapterName}}) == None:
@@ -106,10 +114,12 @@ class BaozimhSpider(scrapy.Spider):
         db_chapterId = db_vague_str['chapterId']
         db_chapterOrder = db_vague_str['chapterOrder']
         head_four.reverse()
+
         for index,chapter in enumerate(head_four):
             chapter['cartoonId'] = db_cartoonId
-            chapter['chapterId'] = int(db_chapterId) + index + random.randint(0,4)
-            chapter['chapterOrder'] = int(db_chapterOrder) +  index + 1
+            # chapter['chapterId'] = int(db_chapterId) + index + random.randint(1,4)
+            chapter['chapterId'] = int(db_chapterId) + index + 1
+            chapter['chapterOrder'] = int(db_chapterOrder) + index + 1
             chapter['imgUrl'] = []
             for url in chapter['sourceHref']:
                 if url.find('cn.webmota.com') != -1:
@@ -120,7 +130,7 @@ class BaozimhSpider(scrapy.Spider):
     def parse_chapter_detail(self, response):
         chapter = response.meta['chapterItem']
         chapterItems = NavCartoonItem()
-        chapter_imgUrl = response.xpath('//ul[@class="comic-contain"]/amp-img/@src').extract()
+        chapter_imgUrl = response.xpath('//ul[@class="comic-contain"]//amp-img/@src').extract()
         chapterItems['imgUrl'] = chapter_imgUrl
         # chapterItems['imgUrl'] = ['http://www.baidudddd.com']
         chapterItems['cartoonId'] = chapter['cartoonId']
@@ -171,11 +181,13 @@ class BaozimhSpider(scrapy.Spider):
     # 遍历获取未爬取到的章节,通过数据库排序获取到最新章节，和爬取的页面数据进行对比
     def find_new_chapter(self,cartoonId,head_four_chapter,index):
         up_new_data = list(self.mycolSCI.find({"cartoonId":str(cartoonId)}).sort("chapterOrder",-1).limit(1))[0]
+        state = False
         # 截取倒数第八位对比数据库数据
         if len(up_new_data['chapterName']) >= index :
             vague_str = up_new_data['chapterName'][-index:]
         else:
-            vague_str = up_new_data['chapterName']
+            vague_str = up_new_data['chapterName'] #当截取判断的标题等于标题时结束while
+            state = True
         head_four = []
         for div in head_four_chapter:
             chapterName = div.xpath('./a//span/text()').extract_first().strip().split(" ")[1]
@@ -187,7 +199,7 @@ class BaozimhSpider(scrapy.Spider):
                 head_four.append(dict)
             else:
                 break;
-        return (head_four,up_new_data)
+        return (head_four,up_new_data,state)
 
 
 
