@@ -15,7 +15,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from nav.items import *
 from scrapy.utils.project import get_project_settings # 导入配置文件
 from pymongo import MongoClient #mongodb数据库连接
-from tqdm import tqdm #进度条
+# from tqdm import tqdm #进度条
 import random
 
 class A6cartoonSpider(CrawlSpider):
@@ -86,7 +86,7 @@ class A6cartoonSpider(CrawlSpider):
             id = list.xpath("./li[1]/a/@href").extract_first().replace("/","")
             item['cartoonId'] = id
             item['sourceHref'] = [source_url]
-    
+
 
             #todo 判断是否爬取完成，判断数据是否存在，当
             filter_find = {"title":item['title']}

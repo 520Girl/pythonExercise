@@ -15,8 +15,12 @@ class BaozimhSpider(scrapy.Spider):
     start_urls = [f'https://cn.baozimh.com/search?q={input_cartoon_name}']
     
     # 修改初始url 重写start_requests
-    # def start_requests(self):
-    #     return [scrapy.Request(url=f"https://cn.baozimh.com/search?q={self.input_cartoon_name}")]
+    def start_requests(self):
+        if hasattr(self,'arg1'):
+            self.input_cartoon_name = self.arg1
+            return [scrapy.Request(url=f"https://cn.baozimh.com/search?q={self.arg1}")]
+        return [scrapy.Request(url=f"https://cn.baozimh.com/search?q={self.input_cartoon_name}")]
+        
 
     #! 初始化需要使用到数据库以达到增量爬虫的目的
     def __init__(self,*args, **kwargs):

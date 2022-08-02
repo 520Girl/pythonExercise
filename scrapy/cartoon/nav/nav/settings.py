@@ -23,6 +23,11 @@ RANDOMIZE_DOWNLOAD_DELAY = True
 # # # 日志级别 CRITICAL, ERROR, WARNING, INFO, DEBUG
 # # LOG_LEVEL='DEBUG'
 # LOG_FILE = log_file_path
+# 如果等于True，所有的标准输出（包括错误）都会重定向到日志，例如：print('hello')
+
+# ----------------------
+# LOG_STDOUT = True #该配置会影响 scrapyedweb 项目的读取 我搞了几天
+# -----------------------------------------
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
