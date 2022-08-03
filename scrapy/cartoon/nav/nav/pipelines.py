@@ -107,17 +107,18 @@ class MongodbPipeline:
         #关闭数据库管道时循环状态更新 内容表中的状态
         all_cartoon = list(spider.mycolSC.find())
         for cartoon in all_cartoon:
-            if cartoon['state'] == 0:
+            if cartoon['sbelong'] == 1: # 判断漫画是否还在连载中
                 cartoon_id = cartoon['cartoonId']
                 all_chapters = list(spider.mycolSCI.find({"cartoonId":cartoon_id}).sort("chapterOrder",-1))
                 chapter_state = True
                 for chapter in all_chapters:
-                    if chapter['state'] == 0:
+                    if chapter['state'] == 0:       
                         chapter_state = False
-                        spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}})
+                        spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}}) # 更新内容的状态，发现有内容未被下载
                         break;
-                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"crawlLength":len(all_chapters)}})
+                spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"crawlLength":len(all_chapters)}}) # 更改内容的 总长度
                 if chapter_state:
-                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}})
+                    spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}}) # 更改内容的 状态
+        
 
 

@@ -114,7 +114,7 @@ class BaozimhSpider(scrapy.Spider):
 
         
         #将数组倒叙，出入数据库
-        db_cartoonId = db_vague_str['cartoonId'] #数据库最后一章的漫画id和 章节id
+            db_cartoonId = db_vague_str['cartoonId'] #数据库最后一章的漫画id和 章节id
         db_chapterId = db_vague_str['chapterId']
         db_chapterOrder = db_vague_str['chapterOrder']
         head_four.reverse()
@@ -194,7 +194,7 @@ class BaozimhSpider(scrapy.Spider):
             state = True
         head_four = []
         for div in head_four_chapter:
-            chapterName = div.xpath('./a//span/text()').extract_first().strip().split(" ")[1]
+            chapterName = "".join(div.xpath('./a//span/text()').extract_first().strip().split(" ")[1:])
             if re.match(rf"(.*{vague_str})$",chapterName) == None: # 表示章节不存在
                 sourceHref = div.xpath('./a/@href').extract_first()
                 url_split = sourceHref.split("?")[1].split("&")
