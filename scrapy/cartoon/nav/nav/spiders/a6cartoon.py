@@ -279,7 +279,7 @@ class A6cartoonSpider(CrawlSpider):
         regex = re.compile(r".*?eval(?P<javaScript>.*?)</script>",re.S)
         re_js_group = regex.search(bookChapter_text)
         re_js = re_js_group.group('javaScript')
-        file_name = f"./index{id}.js"
+        file_name = "."+os.sep+f"index{id}.js"
 
         #todo 2. 处理js代码，将执行结果输出，进行数据处理
         #? 将js变为自执行函数,并输出
