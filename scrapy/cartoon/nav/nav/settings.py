@@ -14,8 +14,8 @@ SPIDER_MODULES = ['nav.spiders']
 NEWSPIDER_MODULE = 'nav.spiders'
 
 #让蜘蛛在访问网址中间休息1~2秒。
-DOWNLOAD_DELAY = 2
-RANDOMIZE_DOWNLOAD_DELAY = True
+# DOWNLOAD_DELAY = 2
+# RANDOMIZE_DOWNLOAD_DELAY = True
 
 # 设置日志
 # today = datetime.now()
@@ -50,6 +50,17 @@ DB_PORT = "27017"
 DB_USER = "nav"
 DB_PASSWORD = "123456"
 DB_HOST = "127.0.0.1"
+
+
+# 配置邮箱
+MAIL_HOST = "smtp.qq.com" # 邮件发送服务器
+MAIL_PORT = 465
+MAIL_FROM = "815842080@qq.com"
+MAIL_USER = "815842080@qq.com"
+MAIL_PASS = "wouxqiiiohwzbfea"
+MYEXT_ENABLED  = True
+MAIL_SSL = True
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -91,6 +102,7 @@ EXTENSIONS = {
     # 'scrapy.extensions.telnet.TelnetConsole': None,
     'scrapy.extensions.corestats.CoreStats': None,  # 禁用默认的数据收集器
     'nav.CoreStats.SpiderOpenCloseLogging': 501,
+    'nav.extendions.sendmail.SendEmail': 502,
 }
 
 

@@ -40,6 +40,11 @@ class BaozimhSpider(scrapy.Spider):
         self.mycolSCI = mydb['spiderCartoonsItems'] #章节
 
 
+        #? 2.3 设置变量统计是爬取的数据还是更新的数据
+        # crawler_data = [{"title":"武炼巅峰","cartoonId":123,"state":1}]
+        # update_data = [{"title":"武炼巅峰","chapterOrder":123,"state":1}]
+        self.crawler_data = []
+        self.update_data = []
 
 
     def parse(self, response):

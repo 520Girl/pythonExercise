@@ -96,7 +96,11 @@ class MongodbPipeline:
                     spider.mycolSCI.insert_one(dict(item))
                 else:
                     spider.mycolSCI.insert_one(dict(item))
+                # 将数据统计更新新爬取的数据中方便后面邮箱统计
+                spider.update_data.append({"title":item['chapterName'],"chapterOrder":item['chapterOrder'],"state":item['state']}) 
             else: # 表示为内容数据
+                # 将数据统计到新爬取的数据中方便后面邮箱统计
+                spider.crawler_data.append({"title":item['title'],"cartoonId":item['cartoonId'],"state":item['state']}) 
                 spider.mycolSC.insert_one(dict(item))
         except Exception as err:
             print(err)
