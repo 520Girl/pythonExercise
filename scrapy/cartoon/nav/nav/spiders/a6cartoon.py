@@ -123,6 +123,19 @@ class A6cartoonSpider(CrawlSpider):
         item['author'] = author
         # 创建时间
         item["createTime"] = time.time() * 1000
+        #修改标签对比获取最长的标签
+        keywords = detail.xpath('./div[@class="cy_info"]/div[1]/div[4]/span[2]/text()').extract_first().split("标签：")[1]
+        if not keywords.isdigit(): # 判断是否是"4"这样的数字，如果是就不赋值，取分类标签的第一项
+                if keywords.find("["): #'[\"玄幻\"\"古风\"\"漫'
+                    keywords_tem= []
+                    for key in keywords.split('""'):
+                        key.replace("[","").replace('"',"").replace(']',"")
+                        keywords_tem.append(key)
+                    
+                elif keywords.find(" "):#运动 神魔 玄幻 新作
+                    keywords_tem = keywords.split(" ") 
+        if len("".join(keywords_tem)) >= len("".join(item['keywords'])) :
+            item['keywords'] = keywords_tem
         # 漫画属于分类
         classify = detail.xpath('./div[@class="cy_info"]/div[1]//div[4]/span[1]/text()').extract_first().split("类别：")[1]
         item['classify'] = self.classify_split(classify)
@@ -142,7 +155,7 @@ class A6cartoonSpider(CrawlSpider):
         update_chapterId = url.split("/")[-1].split(".")[0]
         #将 2022-06-21 转换为时间戳
         timeArray = time.strptime(LChapters_time, "%Y-%m-%d") #转换成时间数组
-        dic_time = time.mktime(timeArray) #转换成时间戳
+        dic_time = time.mktime(timeArray) * 1000 #转换成时间戳
         
         item['LChapters'] = {"updateTime":dic_time,"name":LChapters_name,"url":LChapters_url,"chapterId":update_chapterId}
         #获取章节条数以及章节信息

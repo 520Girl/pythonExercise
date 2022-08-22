@@ -120,6 +120,9 @@ class MongodbPipeline:
                         chapter_state = False
                         spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":0}}) # 更新内容的状态，发现有内容未被下载
                         break;
+                    if chapter['crawlLength'] == 0: # 当没有爬取到章节的时候状态也为0
+                        chapter_state = False
+                        break;
                 spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"crawlLength":len(all_chapters)}}) # 更改内容的 总长度
                 if chapter_state:
                     spider.mycolSC.update_one({"cartoonId":cartoon_id},{'$set':{"state":1}}) # 更改内容的 状态
