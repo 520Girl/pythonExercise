@@ -16,21 +16,18 @@ class DownloadimagePipeline:
         return item
 class BWDImagesPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
-        image_urls = []
         for list in item['doc']:
-            image_urls.append(list['sourceHref'])
-            yield scrapy.Request(list['sourceHref'],meta={'item':"1234"})
-            for img in list['content']:
-                yield scrapy.Request(img['img'],meta={'item':"123"})
+            print(list['name'])
+            yield scrapy.Request(list['icon'],meta=list)
         
     def file_path(self, request, response=None, info=None, *, item=None):
-        img_name = request.url.split('/')[-1]
-        return f"name/{request.meta['item']+img_name}"
+        img_name = request.meta['name']
+        print('--------------')
+        print(img_name)
+        return f"navWebsit{os.sep}{img_name}"
     
     def item_completed(self, results, item, info):
-        print(results)
-        item['files'] = '123'
-        for list in results:
-            print(list[0])
-        print(item)
+        for tuples in results:
+            print("=======================")
+            print(tuples)
         return item

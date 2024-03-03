@@ -1,4 +1,4 @@
-# Scrapy settings for downloadImage project
+# Scrapy settings for websiteAI project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -6,31 +6,19 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-import os
-BOT_NAME = 'downloadImage'
 
-SPIDER_MODULES = ['downloadImage.spiders']
-NEWSPIDER_MODULE = 'downloadImage.spiders'
+BOT_NAME = 'websiteAI'
 
-DEFAULT_REQUEST_HEADERS = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.9 Safari/537.36',
-}
+SPIDER_MODULES = ['websiteAI.spiders']
+NEWSPIDER_MODULE = 'websiteAI.spiders'
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'downloadImage (+http://www.yourdomain.com)'
+#USER_AGENT = 'websiteAI (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-# 图片下载的路径，供images pipelines使用
-IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__)), rf'static{os.sep}images{os.sep}cartoon')
-
-#图像管道避免下载最近下载的文件。要调整此保留延迟 默认为90天
-# 120 days of delay for files expiration
-FILES_EXPIRES = 120
-IMAGES_EXPIRES = 30
 
 #mongodb数据库配置
 DB_PORT = "27017"
@@ -38,13 +26,14 @@ DB_USER = "nav"
 DB_PASSWORD = "123456"
 DB_HOST = "127.0.0.1"
 
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -56,21 +45,22 @@ DB_HOST = "127.0.0.1"
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.9 Safari/537.36',
+}   
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'downloadImage.middlewares.DownloadimageSpiderMiddleware': 543,
+#    'websiteAI.middlewares.WebsiteaiSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'downloadImage.middlewares.DownloadimageDownloaderMiddleware': 543,
+#    'websiteAI.middlewares.WebsiteaiDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -78,11 +68,15 @@ DB_HOST = "127.0.0.1"
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
-
+import os
+IMAGES_STORE = os.path.join(os.path.dirname(os.path.dirname(__file__))+os.sep+'static'+os.sep+'images')
+FILES_EXPIRES = 110
+IMAGES_EXPIRES = 20
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'downloadImage.pipelines.BWDImagesPipeline': 300,
+    'websiteAI.pipelines.ImgsPipLine': 300,
+    'websiteAI.pipelines.WebsiteaiPipeline': 301
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

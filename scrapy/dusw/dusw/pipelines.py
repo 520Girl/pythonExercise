@@ -54,9 +54,10 @@ class mongoDBPipeline:
 
     def process_item(self, item, spider):
         #创建数据 存入数据
+        print(item)
         mydict  = {"name":f"{item['name']}","src":f"{item['src']}"}
-        x = self.mycol.insert_one(mydict)
-        print(x)
+        # x = self.mycol.insert_one(mydict)
+        # print(x)
         return item
 
     #关闭数据库

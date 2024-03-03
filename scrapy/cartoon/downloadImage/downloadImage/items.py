@@ -10,3 +10,5 @@ class DownloadimageItem(scrapy.Item):
     doc = scrapy.Field()
     image_urls = scrapy.Field()
     files = scrapy.Field()
+
+
